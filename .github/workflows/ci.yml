@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+      - name: Run tests
+        run: |
+          python -m unittest discover -s tests -v
+      - name: Prepare QA override pack
+        run: |
+          mkdir -p data/raw/2026-02-18
+          cat > data/raw/2026-02-18/tencent_financials.csv << 'EOF'
+          asof,revenue_hkd_bn,ebit_margin,capex_pct_revenue,nwc_pct_revenue,dep_pct_revenue,net_cash_hkd_bn,shares_out_bn,current_price_hkd,fundamentals_method,fundamentals_source
+          2026-02-18,700.0,0.36,0.09,0.02,0.03,110.0,9.0,300.0,ttm_4q_from_quarterly,override_csv
+          EOF
+          cat > data/raw/2026-02-18/segment_revenue.csv << 'EOF'
+          period,segment,revenue_hkd_bn,total_revenue_hkd_bn,segment_source
+          2026-02-18,VAS,230.0,700.0,override_csv
+          2026-02-18,Marketing Services,150.0,700.0,override_csv
+          2026-02-18,FinTech and Business Services,295.0,700.0,override_csv
+          2026-02-18,Others,25.0,700.0,override_csv
+          EOF
+          cat > data/raw/2026-02-18/peer_fundamentals.csv << 'EOF'
+          ticker,gross_debt_hkd_bn,interest_expense_hkd_bn_3y_avg,effective_tax_rate_3y_avg,shares_out_bn,source_doc,source_date
+          9988.HK,170.0,7.0,0.18,22.97,ci_fixture,2026-02-18
+          3690.HK,120.0,6.0,0.19,6.43,ci_fixture,2026-02-18
+          9999.HK,90.0,4.0,0.21,2.88,ci_fixture,2026-02-18
+          9618.HK,110.0,5.0,0.20,4.55,ci_fixture,2026-02-18
+          9888.HK,95.0,4.3,0.19,5.13,ci_fixture,2026-02-18
+          EOF
+      - name: QA gate (no fail checks)
+        run: |
+          tencent-valuation run-all --asof 2026-02-18 --source-mode synthetic --refresh > /tmp/run-all.json
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          qa_path = Path("reports/qa_2026-02-18.json")
+          qa = json.loads(qa_path.read_text())
+          failures = int(qa["summary"]["failures"])
+          if failures > 0:
+              raise SystemExit(f"QA failures={failures}; failing CI")
+          print(f"QA gate passed. warnings={qa['summary']['warnings']}, failures={failures}")
+          PY

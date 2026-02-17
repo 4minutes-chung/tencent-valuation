@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.venv/
+.venv*/
+build/
+dist/
+*.egg-info/
+
+# Generated pipeline artifacts
+data/model/*.csv
+data/model/*.parquet
+data/processed/*.csv
+data/processed/*.parquet
+data/raw/**
+reports/tencent_valuation_*.md
+reports/qa_*.json

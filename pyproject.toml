@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tencent-valuation"
+version = "0.1.0"
+description = "Tencent (0700.HK) valuation pipeline with MM + CAPM/APT WACC"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "PyYAML>=6.0",
+  "statsmodels>=0.14",
+  "beautifulsoup4>=4.12",
+  "pypdf>=4.2"
+]
+
+[project.scripts]
+tencent-valuation = "tencent_valuation.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
