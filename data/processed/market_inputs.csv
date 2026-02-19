@@ -1,0 +1,8 @@
+ticker,tax_rate,gross_debt_hkd_bn,market_equity_hkd_bn,interest_expense_hkd_bn,current_price_hkd,peer_input_source,peer_source_doc,peer_source_date
+0700.HK,0.2,350.0,4844.97,12.0,533.0,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+9988.HK,0.18,170.0,3553.4589999999994,7.0,154.7,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+3690.HK,0.19,120.0,527.5815,6.0,82.05,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+9999.HK,0.21,90.0,539.424,4.0,187.3,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+9618.HK,0.2,110.0,481.845,5.0,105.9,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+9888.HK,0.19,95.0,705.8879999999999,4.3,137.6,peer_fundamentals_csv,peer_fundamentals_template,2026-02-19
+HSI,0.2,0.0,1.4836633333333333,0.0,26705.94,mixed,,

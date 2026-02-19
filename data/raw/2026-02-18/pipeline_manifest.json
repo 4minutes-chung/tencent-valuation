@@ -1,0 +1,10 @@
+{
+  "asof": "2026-02-18",
+  "sources": [
+    "Tencent IR filings",
+    "HKEX filing metadata",
+    "SFC short position data",
+    "Market returns + factor series"
+  ],
+  "note": "Use `tencent-valuation fetch` for raw snapshots from web sources."
+}
