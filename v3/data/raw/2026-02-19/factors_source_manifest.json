@@ -1,0 +1,21 @@
+{
+  "asof": "2026-02-19",
+  "mode": "live",
+  "fundamentals_source": "override_csv",
+  "segment_source": "override_csv",
+  "peer_fundamentals_source": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/peer_fundamentals.csv",
+  "sources": {
+    "prices": "stooq",
+    "factors": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Asia_Pacific_ex_Japan_3_Factors_CSV.zip",
+    "risk_free": "US Treasury daily yield CSV"
+  },
+  "tickers": [
+    "0700.HK",
+    "9988.HK",
+    "3690.HK",
+    "9999.HK",
+    "9618.HK",
+    "9888.HK",
+    "HSI"
+  ]
+}

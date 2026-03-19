@@ -1,0 +1,9 @@
+period_end,revenue_rmb_bn,non_ifrs_op_profit_rmb_bn,capex_rmb_bn,net_cash_rmb_bn,shares_out_bn,source_doc,source_page_hint
+2023-12-31,155.196,49.135,7.524,54.74,9.406543682561782,Tencent Announces 2024 Annual and Fourth Quarter Results,"tencent_announces_2024_annual_and_fourth_quarter_results.txt:lines274,305,358,359,302,313"
+2024-03-31,159.501,58.619,14.359,92.534,9.352310783657066,Tencent Announces 2024 First Quarter Results,"tencent_announces_2024_first_quarter_results.txt:lines239,266,325,326,263,274"
+2024-06-30,161.117,58.443,8.729,71.757,9.317292644757433,Tencent Announces 2024 Second Quarter Results,"tencent_announces_2024_second_quarter_results.txt:lines239,270,328,329,267,278"
+2024-09-30,167.193,61.274,17.094,95.462,9.238111766747657,Tencent Announces 2024 Third Quarter Results,"tencent_announces_2024_third_quarter_results.txt:lines238,273,331,332,270,282"
+2024-12-31,172.446,59.475,36.578,76.798,9.169912453099874,Tencent Announces 2024 Annual and Fourth Quarter Results,"tencent_announces_2024_annual_and_fourth_quarter_results.txt:lines274,305,358,359,302,313"
+2025-03-31,180.022,69.32,27.476,90.229,9.105293221629855,Tencent Announces 2025 First Quarter Results,"tencent_announces_2025_first_quarter_results.txt:lines221,252,305,306,249,261"
+2025-06-30,184.504,69.248,19.107,74.592,9.096974652493868,Tencent Announces 2025 Second Quarter Results,"tencent_announces_2025_second_quarter_results.txt:lines232,263,315,316,260,271"
+2025-09-30,192.869,72.57,12.983,102.422,9.081271576524742,Tencent Announces 2025 Third Quarter Results,"tencent_announces_2025_third_quarter_results.txt:lines217,246,298,299,243,254"

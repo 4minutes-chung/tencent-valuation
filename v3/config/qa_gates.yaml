@@ -1,0 +1,25 @@
+peer_source_max_age_months: 18
+
+scenario_bounds:
+  growth_min: -0.50
+  growth_max: 0.50
+  margin_min: 0.00
+  margin_max: 0.80
+  capex_min: 0.00
+  capex_max: 0.40
+  nwc_min: -0.10
+  nwc_max: 0.20
+
+backtest:
+  min_points: 4
+  min_hit_rate_12m: 0.45
+  calibration_metric: "bucket"
+  max_calibration_mae_12m: 0.35
+  min_interval_coverage_12m: 0.40
+
+schema:
+  enforce_required_columns: true
+
+headline:
+  fail_on_nan: true
+  max_band_width_ratio: 3.5

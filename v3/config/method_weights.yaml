@@ -1,0 +1,9 @@
+method_weights:
+  dcf: 0.35
+  apv: 0.20
+  residual_income: 0.15
+  relative: 0.15
+  sotp_tvalue: 0.15
+weight_overrides:
+  apt_unstable_penalty: 0.90
+  backtest_quality_penalty: 0.85

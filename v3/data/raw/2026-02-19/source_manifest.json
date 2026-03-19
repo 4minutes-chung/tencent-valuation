@@ -1,0 +1,67 @@
+{
+  "asof": "2026-02-19",
+  "created_at_utc": "2026-02-19T03:27:39.358743+00:00",
+  "parser_version": "v3.0",
+  "entries": [
+    {
+      "url": "https://www.tencent.com/en-us/investors/financial-news.html",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/tencent_ir_financial_news.html",
+      "bytes": 303361,
+      "sha256": "18348c93c79a6843452a8cb5e338458b6ac3e248c6374b3c90bc558cc8f9554d",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "tencent_ir_financial_news",
+      "parser_version": "v3.0"
+    },
+    {
+      "url": "https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=en",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/hkex_title_search.html",
+      "bytes": 12281,
+      "sha256": "04168418fb4c0685355ace651ff57b52b33974fc9ebd2ae82bbdf1d904dea487",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "hkex_title_search",
+      "parser_version": "v3.0"
+    },
+    {
+      "url": "https://www.hkexnews.hk/sdw/search/mutualmarket.aspx?t=hk",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/hkex_ccass.html",
+      "bytes": 557655,
+      "sha256": "e31b2089b521b5a844b881bf7c074b9abf8bc59139c8cc4a8d8591ab20768880",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "hkex_ccass",
+      "parser_version": "v3.0"
+    },
+    {
+      "url": "https://www.sfc.hk/en/Regulatory-functions/Market/Short-position-reporting",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/sfc_short_positions.html",
+      "bytes": 137492,
+      "sha256": "f3d088e20c4cf0be9f89890817617f5bed41695d2963c8dc418a2f26ca68bb36",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "sfc_short_positions",
+      "parser_version": "v3.0"
+    },
+    {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Asia_Pacific_ex_Japan_3_Factors_CSV.zip",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/Asia_Pacific_ex_Japan_3_Factors_CSV.zip",
+      "bytes": 5008,
+      "sha256": "a240adf8e9f9755011007e5be5356063fca41d7b5171cbf07d3955060e26403b",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "ken_french_apac_3f",
+      "parser_version": "v3.0"
+    },
+    {
+      "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&field_tdr_date_value=2026&page&_format=csv",
+      "file": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/ust_daily_yield_2026.csv",
+      "bytes": 2702,
+      "sha256": "c8c94dcca90f0aca3c2baf4cd7e44176e013e62c020ac6525fbd5ae6543586a9",
+      "usage_status": "fetched",
+      "status": "ok",
+      "name": "ust_daily_yield",
+      "parser_version": "v3.0"
+    }
+  ]
+}
