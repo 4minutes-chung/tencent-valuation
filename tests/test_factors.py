@@ -4,7 +4,7 @@ import tempfile
 
 import pandas as pd
 
-from tencent_valuation.factors import (
+from tencent_valuation_v3.factors import (
     FactorDataError,
     REQUIRED_TENCENT_FINANCIAL_COLS,
     _read_override_if_valid,

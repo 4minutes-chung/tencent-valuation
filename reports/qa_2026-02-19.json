@@ -1,7 +1,7 @@
 {
   "asof": "2026-02-19",
   "summary": {
-    "total_checks": 12,
+    "total_checks": 21,
     "warnings": 2,
     "failures": 0,
     "investor_grade": true
@@ -25,7 +25,8 @@
       "metric": {
         "apt_is_unstable": true,
         "gap_bps": 480.80540355746047,
-        "unstable_threshold_bps": 400.0
+        "unstable_threshold_bps": 400.0,
+        "reason_codes": "capm_apt_gap;window_instability"
       },
       "message": "APT diagnostic marked unstable and excluded from headline valuation."
     },
@@ -39,9 +40,9 @@
       "check": "scenario_ordering",
       "status": "pass",
       "metric": {
-        "extreme": 211.10094934593613,
-        "bad": 316.4679434955424,
-        "base": 574.366949944741
+        "extreme": 210.8849683430685,
+        "bad": 316.1441597133121,
+        "base": 573.7793052645656
       },
       "message": "Check extreme <= bad <= base."
     },
@@ -82,12 +83,86 @@
       "message": "Peer source recency check."
     },
     {
+      "check": "source_manifest_health",
+      "status": "pass",
+      "metric": {
+        "entries": 6,
+        "errors": 0
+      },
+      "message": "Source manifest ingestion status."
+    },
+    {
       "check": "scenario_economic_consistency",
       "status": "pass",
       "metric": {
         "violations": []
       },
       "message": "Scenario assumptions are within configured economic bounds."
+    },
+    {
+      "check": "schema::wacc_components.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for wacc_components.csv."
+    },
+    {
+      "check": "schema::valuation_outputs.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for valuation_outputs.csv."
+    },
+    {
+      "check": "schema::valuation_method_outputs.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for valuation_method_outputs.csv."
+    },
+    {
+      "check": "schema::valuation_ensemble.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for valuation_ensemble.csv."
+    },
+    {
+      "check": "schema::tvalue_company_bridge.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for tvalue_company_bridge.csv."
+    },
+    {
+      "check": "schema::reverse_dcf_outputs.csv",
+      "status": "pass",
+      "metric": {
+        "missing_columns": []
+      },
+      "message": "Schema contract for reverse_dcf_outputs.csv."
+    },
+    {
+      "check": "headline_nan_check",
+      "status": "pass",
+      "metric": {
+        "has_nan": false
+      },
+      "message": "No NaN values in ensemble headline outputs."
+    },
+    {
+      "check": "ensemble_band_width",
+      "status": "pass",
+      "metric": {
+        "max_band_width_ratio": 1.3680966191305768,
+        "threshold": 3.5
+      },
+      "message": "Ensemble valuation band width sanity check."
     },
     {
       "check": "backtest_minimum_coverage",
@@ -108,7 +183,9 @@
         "calibration_mae_12m_selected": 0.3475210274843363,
         "calibration_mae_12m_bucket": 0.3475210274843363,
         "calibration_mae_12m_raw": 0.9903287499935478,
-        "max_calibration_mae_12m": 0.35
+        "max_calibration_mae_12m": 0.35,
+        "interval_coverage_12m": 0.75,
+        "min_interval_coverage_12m": 0.4
       },
       "message": "Backtest quality thresholds."
     }

@@ -1,4 +1,5 @@
 forecast_years: 7
+mid_year_discounting: true
 scenarios:
   base:
     terminal_g: 0.025
@@ -6,18 +7,55 @@ scenarios:
     ebit_margin: [0.36, 0.365, 0.368, 0.37, 0.372, 0.373, 0.374]
     capex_pct_revenue: [0.09, 0.09, 0.088, 0.086, 0.085, 0.084, 0.083]
     nwc_pct_revenue: [0.020, 0.020, 0.019, 0.019, 0.018, 0.018, 0.018]
+    sbc_pct_revenue: [0.015, 0.015, 0.014, 0.014, 0.013, 0.013, 0.012]
+    annual_buyback_hkd_bn: 40.0
   bad:
     terminal_g: 0.01
     revenue_growth: [0.03, 0.03, 0.03, 0.032, 0.033, 0.034, 0.035]
     ebit_margin: [0.33, 0.328, 0.326, 0.325, 0.324, 0.323, 0.322]
     capex_pct_revenue: [0.095, 0.095, 0.094, 0.093, 0.092, 0.091, 0.090]
     nwc_pct_revenue: [0.022, 0.022, 0.022, 0.021, 0.021, 0.021, 0.021]
+    sbc_pct_revenue: [0.016, 0.016, 0.015, 0.015, 0.015, 0.015, 0.015]
+    annual_buyback_hkd_bn: 20.0
   extreme:
     terminal_g: 0.0
     revenue_growth: [-0.03, -0.02, 0.01, 0.02, 0.025, 0.03, 0.03]
     ebit_margin: [0.30, 0.295, 0.292, 0.290, 0.288, 0.286, 0.285]
     capex_pct_revenue: [0.10, 0.10, 0.10, 0.098, 0.097, 0.096, 0.095]
     nwc_pct_revenue: [0.024, 0.024, 0.024, 0.023, 0.023, 0.023, 0.023]
+    sbc_pct_revenue: [0.018, 0.018, 0.017, 0.016, 0.015, 0.015, 0.015]
+    annual_buyback_hkd_bn: 0.0
+monte_carlo:
+  n_simulations: 10000
+  growth_std: 0.03
+  margin_std: 0.02
+  wacc_std: 0.005
+  terminal_g_std: 0.005
+  correlation_growth_margin: -0.3
+
+scenario_probabilities:
+  base: 0.50
+  bad: 0.35
+  extreme: 0.15
+
+stress_scenarios:
+  gaming_crackdown:
+    description: "Severe gaming regulation tightening"
+    probability: 0.05
+    revenue_growth_override: [-0.15, -0.10, -0.05, 0.00, 0.02, 0.03, 0.03]
+    ebit_margin_override: [0.28, 0.27, 0.27, 0.28, 0.29, 0.30, 0.30]
+  fintech_regulation:
+    description: "Major fintech licensing / capital requirements"
+    probability: 0.08
+    revenue_growth_override: [-0.05, -0.03, 0.00, 0.02, 0.03, 0.04, 0.04]
+    ebit_margin_override: [0.32, 0.31, 0.31, 0.32, 0.33, 0.34, 0.34]
+  us_china_escalation:
+    description: "US-China tech decoupling"
+    probability: 0.10
+    revenue_growth_override: [-0.05, -0.03, 0.00, 0.02, 0.03, 0.04, 0.04]
+    ebit_margin_override: [0.33, 0.32, 0.32, 0.33, 0.34, 0.34, 0.34]
+    wacc_adder_bps: 100
+
 sensitivities:
   wacc_shifts_bps: [-100, -50, 0, 50, 100]
   terminal_g_shifts_bps: [-100, 0, 100]

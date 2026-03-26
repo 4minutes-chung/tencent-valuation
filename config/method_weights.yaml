@@ -1,0 +1,16 @@
+method_weights:
+  dcf: 0.25
+  apv: 0.15
+  residual_income: 0.10
+  relative: 0.10
+  sotp_tvalue: 0.15
+  eva: 0.10
+  monte_carlo: 0.10
+  real_options: 0.05
+weight_overrides:
+  apt_unstable_penalty: 0.90
+  backtest_quality_penalty: 0.85
+scenario_probabilities:
+  base: 0.50
+  bad: 0.35
+  extreme: 0.15

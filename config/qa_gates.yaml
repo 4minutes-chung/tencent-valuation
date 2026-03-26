@@ -11,7 +11,17 @@ scenario_bounds:
   nwc_max: 0.20
 
 backtest:
-  min_points: 4
+  min_points: 20
   min_hit_rate_12m: 0.45
   calibration_metric: "bucket"
   max_calibration_mae_12m: 0.35
+  min_interval_coverage_12m: 0.40
+  min_ic_12m: 0.10
+  max_calibration_slope_deviation: 0.50
+
+schema:
+  enforce_required_columns: true
+
+headline:
+  fail_on_nan: true
+  max_band_width_ratio: 3.5

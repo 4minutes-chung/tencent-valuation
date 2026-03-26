@@ -3,9 +3,9 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tencent-valuation"
-version = "0.1.0"
-description = "Tencent (0700.HK) valuation pipeline with MM + CAPM/APT WACC"
+name = "tencent-valuation-v3"
+version = "0.3.0"
+description = "Tencent (0700.HK) valuation pipeline V3 with multi-method stack"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -17,8 +17,11 @@ dependencies = [
   "pypdf>=4.2"
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
 [project.scripts]
-tencent-valuation = "tencent_valuation.cli:main"
+tencent-valuation-v3 = "tencent_valuation_v3.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

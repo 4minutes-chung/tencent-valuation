@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from tencent_valuation.wacc import (
+from tencent_valuation_v3.wacc import (
     apt_cost_of_equity,
     clamp_beta,
     calc_rd,
