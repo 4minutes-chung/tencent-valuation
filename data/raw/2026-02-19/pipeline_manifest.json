@@ -4,7 +4,8 @@
     "Tencent IR filings",
     "HKEX filing metadata",
     "SFC short position data",
-    "Market returns + factor series"
+    "Market returns + factor series",
+    "FRED/Treasury rates"
   ],
-  "note": "Use `tencent-valuation fetch` for raw snapshots from web sources."
+  "note": "Use `tencent-valuation-v3 fetch` for raw snapshots from web sources."
 }

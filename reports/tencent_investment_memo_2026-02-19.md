@@ -1,41 +1,42 @@
-# Tencent Investment Memo (2026-02-19)
+# Tencent Investment Memo V3 (2026-02-19)
 
 ## Thesis
 
-- Tencent valuation is based on a CAPM-anchored WACC with peer-target leverage under MM/Hamada logic.
-- Scenario valuation is decision-framed as base / bad / extreme for downside-aware position sizing.
-- APT diagnostic is unstable for this run and is excluded from headline discount-rate decisions.
+- Official valuation discount rate remains CAPM-based WACC under MM/Hamada target structure.
+- V3 adds APV, residual income, relative valuation, SOTP/T-value, and reverse DCF cross-checks.
+- APT diagnostic is unstable and excluded from headline discount-rate decisions.
 
 ## Key Assumptions
 
 - WACC (official): `7.76%`
-- Cost of Equity (CAPM): `8.60%`
-- Risk-free annualized: `3.37%`
-- ERP annualized: `3.51%`
+- CAPM cost of equity: `8.60%`
+- APT diagnostic cost of equity: `13.40%`
 - Target D/E: `0.167`
-- APT stability score: `0.404`
+- Beta stability score: `0.986`
 - Investor-grade QA status: `PASS`
 
-## Scenario Fair Value
+## DCF Scenario Fair Value
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 574.37 | 7.76% |
-| bad | 316.47 | -40.63% |
-| extreme | 211.10 | -60.39% |
+| base | 573.78 | 7.65% |
+| bad | 316.14 | -40.69% |
+| extreme | 210.88 | -60.43% |
+
+## Ensemble Cross-Check
+
+- bad: ensemble `316.65` (range `265.19` to `351.71`).
+- base: ensemble `528.37` (range `341.39` to `615.62`).
+- extreme: ensemble `229.30` (range `187.71` to `341.39`).
 
 ## Risks
 
 - capm_apt_gap: CAPM/APT gap 480.8 bps; threshold 150.0 bps.
 - apt_stability_gate: APT diagnostic marked unstable and excluded from headline valuation.
 
-## Confidence
-
-- Overall confidence: HIGH.
-
 ## Decision Checklist
 
 - [ ] Override filing inputs updated for current as-of date.
-- [ ] CAPM inputs reviewed (rf, ERP, beta window).
+- [ ] CAPM inputs reviewed (rf, ERP, beta windows).
 - [ ] Scenario assumptions reviewed against current operating trends.
 - [ ] Position sizing and risk limits documented.

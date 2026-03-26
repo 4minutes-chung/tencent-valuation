@@ -3,7 +3,7 @@
   "mode": "live",
   "fundamentals_source": "override_csv",
   "segment_source": "override_csv",
-  "peer_fundamentals_source": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/data/raw/2026-02-19/peer_fundamentals.csv",
+  "peer_fundamentals_source": "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3/data/raw/2026-02-19/peer_fundamentals.csv",
   "sources": {
     "prices": "stooq",
     "factors": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Asia_Pacific_ex_Japan_3_Factors_CSV.zip",

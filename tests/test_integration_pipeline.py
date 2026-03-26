@@ -7,9 +7,9 @@ from unittest import mock
 
 import pandas as pd
 
-from tencent_valuation.backtest import run_backtest
-from tencent_valuation.paths import build_paths
-from tencent_valuation.pipeline import load_context, run_all
+from tencent_valuation_v3.backtest import run_backtest
+from tencent_valuation_v3.paths import build_paths
+from tencent_valuation_v3.pipeline import load_context, run_all
 
 
 class IntegrationPipelineTests(unittest.TestCase):
@@ -121,12 +121,24 @@ class IntegrationPipelineTests(unittest.TestCase):
             "wacc_components",
             "capm_apt_compare",
             "valuation_outputs",
+            "apv_outputs",
+            "residual_income_outputs",
+            "relative_valuation_outputs",
+            "tvalue_company_bridge",
+            "tvalue_stat_diagnostics",
+            "reverse_dcf_outputs",
+            "valuation_method_outputs",
+            "valuation_ensemble",
             "sensitivity_wacc_g",
             "sensitivity_margin_growth",
             "scenario_assumptions_used",
+            "backtest_summary",
+            "backtest_point_results",
+            "backtest_regime_breakdown",
             "qa_report",
             "report",
             "investment_memo",
+            "compact_log",
         ]:
             self.assertIn(key, payload)
             self.assertTrue(Path(payload[key]).exists())
@@ -156,7 +168,7 @@ class IntegrationPipelineTests(unittest.TestCase):
             index=pd.date_range(start="2020-01-01", periods=2200, freq="D"),
             name="0700.HK",
         )
-        with mock.patch("tencent_valuation.backtest.fetch_close_series_for_ticker", return_value=mock_prices):
+        with mock.patch("tencent_valuation_v3.backtest.fetch_close_series_for_ticker", return_value=mock_prices):
             artifacts = run_backtest(
                 start="2024-01-01",
                 end="2025-03-31",
@@ -171,9 +183,17 @@ class IntegrationPipelineTests(unittest.TestCase):
         summary = pd.read_csv(artifacts.summary)
         points = pd.read_csv(artifacts.point_results)
 
-        for col in ["n_points", "hit_rate_6m", "hit_rate_12m", "calibration_mae_12m"]:
+        for col in ["n_points", "hit_rate_6m", "hit_rate_12m", "calibration_mae_12m", "interval_coverage_12m"]:
             self.assertIn(col, summary.columns)
-        for col in ["asof", "base_mos", "forward_6m_return", "forward_12m_return", "direction_hit_12m"]:
+        for col in [
+            "asof",
+            "regime",
+            "base_mos",
+            "forward_6m_return",
+            "forward_12m_return",
+            "direction_hit_12m",
+            "interval_hit_12m",
+        ]:
             self.assertIn(col, points.columns)
         self.assertGreaterEqual(int(summary.iloc[0]["n_points"]), 1)
 

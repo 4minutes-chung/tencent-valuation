@@ -3,6 +3,8 @@ market_ticker: "HSI"
 target_ticker: "0700.HK"
 source_mode: "auto"
 beta_window_weeks: 104
+beta_secondary_windows_weeks: [156]
+beta_secondary_windows_months: [60]
 erp_lookback_months: 60
 erp_method: "rolling_excess_return"
 apt_lookback_months: 60
@@ -38,3 +40,34 @@ fx_fallback_cny_hkd: 1.08
 fallback_market_price_hkd: 533.0
 default_nwc_pct_revenue: 0.02
 default_dep_pct_revenue: 0.03
+strategic_investments_default_hkd_bn: 380.0
+option_overlay_default_hkd_bn: 0.0
+backtest_realized_return_clip_abs: 0.60
+source_recency_warn_days: 30
+source_recency_fail_days: 90
+
+segment_betas:
+  VAS: 0.85
+  Marketing_Services: 1.10
+  FinTech_and_Business_Services: 0.95
+  Others: 1.20
+minority_interest_hkd_bn: 15.0
+
+real_options:
+  cloud_ai_current_value_hkd_bn: 150.0
+  investment_needed_hkd_bn: 80.0
+  time_to_maturity_years: 7
+  volatility: 0.40
+
+# Phase 2: Cost of capital improvements
+rf_method: "current_10y"
+implied_erp_default: 0.055
+country_risk_premium: 0.0125
+beta_adjustment: "vasicek"
+vasicek_prior: 1.0
+vasicek_se: 0.25
+vasicek_prior_variance: 0.16
+lambda_method: "fama_macbeth"
+fm_min_obs: 24
+rd_method: "synthetic_spread"
+rd_spread_bps: 150
