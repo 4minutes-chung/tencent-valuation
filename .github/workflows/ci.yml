@@ -45,6 +45,7 @@ jobs:
       - name: QA gate (no fail checks)
         run: |
           python -m tencent_valuation_v3 run-all --asof 2026-02-18 --source-mode synthetic --refresh > /tmp/run-all.json
+          python -m tencent_valuation_v3 qa --asof 2026-02-18 --source-mode synthetic > /tmp/qa.json
           python - << 'PY'
           import json
           from pathlib import Path
