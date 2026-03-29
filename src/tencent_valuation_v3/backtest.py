@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import shutil
 import tempfile
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,7 +11,7 @@ import pandas as pd
 
 from .config import load_yaml
 from .dcf import run_valuation
-from .factors import fetch_close_series_for_ticker, run_factors
+from .factors import FactorDataError, fetch_close_series_for_ticker, run_factors
 from .paths import ProjectPaths, build_paths
 from .wacc import run_wacc
 
@@ -71,6 +72,57 @@ def _next_price(series: pd.Series, ts: pd.Timestamp) -> float | None:
     return float(later.iloc[0])
 
 
+def _prev_price(series: pd.Series, ts: pd.Timestamp) -> float | None:
+    earlier = series.loc[series.index <= ts]
+    if earlier.empty:
+        return None
+    return float(earlier.iloc[-1])
+
+
+def _annualization_points(index: pd.DatetimeIndex) -> float:
+    """Infer points-per-year from observed sampling frequency."""
+    if len(index) < 3:
+        return 52.0
+    deltas = index.to_series().diff().dropna().dt.total_seconds() / 86400.0
+    if deltas.empty:
+        return 52.0
+    step_days = float(deltas.median())
+    if step_days <= 2.0:
+        return 252.0
+    if step_days <= 10.0:
+        return 52.0
+    if step_days <= 40.0:
+        return 12.0
+    return max(1.0, 365.25 / step_days)
+
+
+def _price_series_from_weekly_returns(paths: ProjectPaths, ticker: str) -> pd.Series:
+    weekly_path = paths.data_processed / "weekly_returns.csv"
+    if not weekly_path.exists():
+        raise BacktestError("weekly_returns.csv missing; cannot construct backtest price series")
+
+    weekly = pd.read_csv(weekly_path)
+    required = {"date", "ticker", "ret"}
+    if not required.issubset(set(weekly.columns)):
+        raise BacktestError("weekly_returns.csv missing required columns for backtest price reconstruction")
+
+    block = weekly.loc[weekly["ticker"] == ticker, ["date", "ret"]].copy()
+    if block.empty:
+        raise BacktestError(f"No weekly return rows for target ticker {ticker}")
+
+    block["date"] = pd.to_datetime(block["date"], errors="coerce")
+    block["ret"] = pd.to_numeric(block["ret"], errors="coerce")
+    block = block.dropna(subset=["date", "ret"]).sort_values("date")
+    if block.empty:
+        raise BacktestError(f"No usable weekly return rows for target ticker {ticker}")
+
+    # Reconstruct an index level series from returns; absolute scale is irrelevant for returns.
+    index_level = (1.0 + block["ret"].clip(lower=-0.999999)).cumprod() * 100.0
+    series = pd.Series(index_level.values, index=block["date"], name=ticker)
+    series = series[~series.index.duplicated(keep="last")]
+    return series
+
+
 # ---------------------------------------------------------------------------
 # Phase 5D: Enhanced multi-regime classification
 # ---------------------------------------------------------------------------
@@ -82,7 +134,7 @@ def _classify_regime(series: pd.Series, asof: pd.Timestamp) -> str:
     if not isinstance(series.index, pd.DatetimeIndex) or len(series) < 4:
         return "unknown"
 
-    px_now = _next_price(series, asof)
+    px_now = _prev_price(series, asof)
     if px_now is None or px_now <= 0:
         return "unknown"
 
@@ -91,8 +143,8 @@ def _classify_regime(series: pd.Series, asof: pd.Timestamp) -> str:
     if earliest > asof - pd.DateOffset(months=2):
         return "unknown"
 
-    px_3m = _next_price(series, asof - pd.DateOffset(months=3))
-    px_12m = _next_price(series, asof - pd.DateOffset(months=12))
+    px_3m = _prev_price(series, asof - pd.DateOffset(months=3))
+    px_12m = _prev_price(series, asof - pd.DateOffset(months=12))
 
     ret_3m = None if (px_3m is None or px_3m <= 0) else (px_now / px_3m) - 1.0
     ret_12m = None if (px_12m is None or px_12m <= 0) else (px_now / px_12m) - 1.0
@@ -102,7 +154,7 @@ def _classify_regime(series: pd.Series, asof: pd.Timestamp) -> str:
     sub = series.loc[(series.index >= window_start) & (series.index <= asof)]
     if len(sub) >= 4:
         log_rets = np.log(sub / sub.shift(1)).dropna()
-        pts_per_year = 52.0  # assume weekly-ish frequency
+        pts_per_year = _annualization_points(sub.index)
         annualized_vol = float(log_rets.std() * np.sqrt(pts_per_year)) if len(log_rets) >= 3 else 0.0
     else:
         annualized_vol = 0.0
@@ -331,7 +383,33 @@ def run_backtest(
     target = str(wacc_config.get("target_ticker", "0700.HK"))
     timeout = int(wacc_config.get("http_timeout_seconds", 20))
 
-    price_series = fetch_close_series_for_ticker(target, asof=end, timeout=timeout)
+    mode = str(source_mode or wacc_config.get("source_mode", "auto")).strip().lower()
+    if mode not in {"auto", "live", "synthetic"}:
+        raise BacktestError(f"Invalid source mode for backtest: {mode}")
+
+    price_series: pd.Series
+    if mode == "synthetic":
+        try:
+            price_series = _price_series_from_weekly_returns(paths, target)
+        except BacktestError as exc:
+            warnings.warn(
+                f"Synthetic backtest series unavailable ({exc}); falling back to fetched close prices.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            price_series = fetch_close_series_for_ticker(target, asof=end, timeout=timeout)
+    else:
+        try:
+            price_series = fetch_close_series_for_ticker(target, asof=end, timeout=timeout)
+        except (FactorDataError, pd.errors.EmptyDataError, OSError, ValueError) as exc:
+            # Fallback path keeps backtest usable when live price API fails.
+            warnings.warn(
+                f"Live backtest price fetch failed ({exc}); using reconstructed weekly return index.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            price_series = _price_series_from_weekly_returns(paths, target)
+
     if price_series.empty:
         raise BacktestError("No price series available for backtest")
 
@@ -387,14 +465,15 @@ def run_backtest(
             base_row = valuation.loc[valuation["scenario"] == "base"].iloc[0]
             mos_base = float(base_row["margin_of_safety"])
 
-        except Exception:  # noqa: BLE001
+        except Exception as exc:  # noqa: BLE001
+            warnings.warn(f"Backtest skipped asof={asof} due to error: {exc}", RuntimeWarning, stacklevel=2)
             continue
         finally:
             if temp_root is not None and temp_root.exists():
                 shutil.rmtree(temp_root, ignore_errors=True)
 
         asof_ts = pd.Timestamp(asof)
-        px0 = _next_price(price_series, asof_ts)
+        px0 = _prev_price(price_series, asof_ts)
         if px0 is None:
             continue
         px6 = _next_price(price_series, asof_ts + pd.DateOffset(months=6))
