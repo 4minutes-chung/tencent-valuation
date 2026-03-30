@@ -1,45 +1,41 @@
-# Tencent Valuation V3 (Standalone)
+# Tencent Model V4 (Main)
 
-V3 is a fully isolated Tencent valuation program under `v3/`.
-It does not read/write V1/V2 model outputs by default.
+This repository is the active Tencent valuation codebase.
+`main` is the only working line and represents V4.
 
-## Core Policy
+## Layout
 
-- Official discount rate: CAPM-based WACC.
-- APT: diagnostic only (guardrailed; can be unstable).
-- Scenarios: `base`, `bad`, `extreme`.
-- Reporting currency: HKD.
+- `config/`: model and QA configuration
+- `src/tencent_valuation_v3/`: implementation package (internal module name kept for code compatibility)
+- `data/`: processed/model outputs
+- `reports/`: QA and valuation reports
+- `tests/`: test suite
 
-## Commands
-
-```bash
-tencent-valuation-v3 fetch --asof YYYY-MM-DD
-tencent-valuation-v3 build-overrides --asof YYYY-MM-DD
-tencent-valuation-v3 factors --asof YYYY-MM-DD [--refresh] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 wacc --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 dcf --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 apv --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 residual-income --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 comps --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 tvalue --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 reverse-dcf --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 ensemble --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 qa --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 report --asof YYYY-MM-DD [--refresh-factors] [--source-mode auto|live|synthetic]
-tencent-valuation-v3 backtest --start YYYY-MM-DD --end YYYY-MM-DD --freq quarterly [--source-mode auto|live|synthetic]
-tencent-valuation-v3 run-all --asof YYYY-MM-DD --source-mode live --refresh
-```
-
-## Output Root
-
-All outputs are written under `v3/data` and `v3/reports`.
-
-## Quick Start
+## Install
 
 ```bash
-cd "/Users/stevenchung/Desktop/P12B_File/Tencent Model/v3"
-pip install -e .
-tencent-valuation-v3 fetch --asof 2026-02-19
-tencent-valuation-v3 build-overrides --asof 2026-02-19
-tencent-valuation-v3 run-all --asof 2026-02-19 --source-mode live --refresh
+cd "/Users/stevenchung/Desktop/P12B_File/Tencent_Model"
+python -m pip install -e .
 ```
+
+## CLI
+
+Use the V4 command:
+
+```bash
+tencent-valuation-v4 fetch --asof YYYY-MM-DD
+tencent-valuation-v4 build-overrides --asof YYYY-MM-DD
+tencent-valuation-v4 run-all --asof YYYY-MM-DD --source-mode auto --refresh
+tencent-valuation-v4 qa --asof YYYY-MM-DD --source-mode auto
+```
+
+## Typical Run
+
+```bash
+tencent-valuation-v4 run-all --asof 2026-02-19 --source-mode synthetic --refresh
+```
+
+## Notes
+
+- Old V1/V2/V3 branch history is not used for daily work.
+- Keep new work on `main` and sync local with GitHub before each session.

@@ -46,7 +46,7 @@ def write_report(asof: str, paths: ProjectPaths) -> Path:
     investor_grade = bool(qa.get("summary", {}).get("investor_grade", False))
 
     lines: list[str] = []
-    lines.append(f"# Tencent Valuation V3 Report ({asof})")
+    lines.append(f"# Tencent Valuation V4 Report ({asof})")
     lines.append("")
     lines.append("## WACC Summary")
     lines.append("")

@@ -101,14 +101,14 @@ def run_fetch(asof: str, paths: ProjectPaths, sources_config: dict | None = None
                 "error": str(exc),
             }
         entry["name"] = name
-        entry["parser_version"] = str((sources_config or {}).get("parser_version", "v3.0"))
+        entry["parser_version"] = str((sources_config or {}).get("parser_version", "v4.0"))
         entries.append(entry)
 
     manifest = raw_dir / "source_manifest.json"
     write_source_manifest(
         out_path=manifest,
         asof=asof,
-        parser_version=str((sources_config or {}).get("parser_version", "v3.0")),
+        parser_version=str((sources_config or {}).get("parser_version", "v4.0")),
         entries=entries,
     )
 

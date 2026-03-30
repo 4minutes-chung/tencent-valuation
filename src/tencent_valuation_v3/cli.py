@@ -28,7 +28,7 @@ from .pipeline import (
 
 
 def _base_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="tencent-valuation-v3")
+    parser = argparse.ArgumentParser(prog="tencent-valuation-v4")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     fetch = subparsers.add_parser("fetch", help="Fetch raw web snapshots into data/raw/<asof>")

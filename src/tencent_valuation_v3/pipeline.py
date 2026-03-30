@@ -73,7 +73,7 @@ def _snapshot_sources(asof: str, ctx: PipelineContext) -> Path:
             "Market returns + factor series",
             "FRED/Treasury rates",
         ],
-        "note": "Use `tencent-valuation-v3 fetch` for raw snapshots from web sources.",
+        "note": "Use `tencent-valuation-v4 fetch` for raw snapshots from web sources.",
     }
     raw_dir = ctx.paths.data_raw / asof
     raw_dir.mkdir(parents=True, exist_ok=True)

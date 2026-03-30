@@ -8,4 +8,4 @@ sources:
   treasury_daily: "https://home.treasury.gov/resource-center/data-chart-center/interest-rates-textview"
   stooq: "https://stooq.com/"
   damodaran: "https://pages.stern.nyu.edu/~adamodar/"
-parser_version: "v3.0"
+parser_version: "v4.0"
