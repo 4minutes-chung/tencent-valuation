@@ -12,7 +12,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from .dcf import _discount, _get_path, _project_fcff
@@ -102,7 +101,6 @@ def _run_eva_scenario(
 
     # Terminal EVA: perpetuity of last-year EVA grown at terminal_g
     last_nopat = float(fcff_df.iloc[-1]["ebit_hkd_bn"]) * (1.0 - tax_rate)
-    last_fcff = float(fcff_df.iloc[-1]["fcff_hkd_bn"])
     terminal_nopat = last_nopat * (1.0 + terminal_g)
     terminal_eva = terminal_nopat - wacc * ic_prev
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .dcf import _discount, _get_path, _project_fcff
+from .dcf import _discount, _project_fcff
 from .paths import ProjectPaths
 
 
@@ -80,7 +80,6 @@ def run_apv(
     rf = float(wrow["rf_annual"])
     erp = float(wrow["erp_annual"])
     beta_u = float(wrow["beta_u_target"])
-    rd = float(wrow["rd"])
     tax_rate = float(wrow["tax_rate_tencent"])
     crp = float(wrow.get("crp", 0.0))
     ru = _unlevered_cost_of_equity(rf, beta_u, erp) + crp

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .dcf import _discount, _get_path, _project_fcff
+from .dcf import _discount, _project_fcff
 from .paths import ProjectPaths
 
 

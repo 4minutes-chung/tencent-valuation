@@ -5,7 +5,6 @@ import math
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 from tencent_valuation_v3.backtest import _load_vintage_config, _compute_metrics
 
@@ -89,7 +88,6 @@ class TestComputeMetrics:
             assert f"hit_rate_q{q}" in metrics
 
     def test_empty_df_returns_nan_metrics(self):
-        import numpy as np
         df = pd.DataFrame(columns=["base_mos", "forward_6m_return", "forward_12m_return",
                                     "direction_hit_6m", "direction_hit_12m", "bucket_abs_error_12m",
                                     "interval_hit_12m"])

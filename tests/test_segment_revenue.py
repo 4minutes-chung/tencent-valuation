@@ -1,9 +1,6 @@
 """Tests for 3E: segment-level revenue growth blending."""
 from __future__ import annotations
 
-import math
-import tempfile
-from pathlib import Path
 
 import pandas as pd
 import pytest

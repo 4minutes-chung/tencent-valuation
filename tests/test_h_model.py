@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import math
-import pytest
 import pandas as pd
 
 from tencent_valuation_v3.dcf import _scenario_value

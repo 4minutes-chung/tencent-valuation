@@ -1,10 +1,8 @@
 """Tests for Phase 4A: Monte Carlo simulation."""
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 

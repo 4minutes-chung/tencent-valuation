@@ -1,7 +1,6 @@
 """Tests for Phase 4D: Real Options (Black-Scholes)."""
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
 import pandas as pd
@@ -126,7 +125,6 @@ class TestRunRealOptions:
 
     def test_no_scipy_dependency(self):
         """Verify the module does not import scipy."""
-        import importlib
         import sys
         # Remove cached module if present
         mods = [k for k in sys.modules if "real_options" in k]

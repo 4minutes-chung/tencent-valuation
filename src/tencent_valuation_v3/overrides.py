@@ -3,7 +3,6 @@ from __future__ import annotations
 import io
 import re
 import warnings
-import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any

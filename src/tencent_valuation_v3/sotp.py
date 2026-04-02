@@ -103,8 +103,6 @@ def run_tvalue(
     erp = float(wrow.get("erp_annual", 0.055))
     crp = float(wrow.get("crp", float(wacc_config.get("country_risk_premium", 0.0125))))
     tax_rate = float(wrow.get("tax_rate_tencent", 0.15))
-    wacc_base = float(wrow["wacc"])
-
     segment_betas: dict[str, float] = {
         str(k): float(v)
         for k, v in wacc_config.get("segment_betas", {}).items()

@@ -125,7 +125,7 @@ def write_report(asof: str, paths: ProjectPaths) -> Path:
             except Exception:
                 pass
             pct_above = float((mc_full["fair_value_hkd_per_share"] > market_price).mean())
-            lines.append(f"")
+            lines.append("")
             lines.append(f"- P(FV > market price {market_price:.0f}): `{pct_above:.1%}`")
             lines.append(f"- Simulations: `{len(mc_full):,}`")
 

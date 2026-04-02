@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import pandas as pd
-import pytest
 
 from tencent_valuation_v3.backtest import _classify_regime
 

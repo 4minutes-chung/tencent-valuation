@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 
 def _write_config(tmp_path: Path) -> Path:

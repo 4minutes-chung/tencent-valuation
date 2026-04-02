@@ -211,7 +211,6 @@ class TestQaReportInvariants:
 
 class TestMonteCarloInvariants:
     def test_mc_has_positive_spread(self, pipeline_output):
-        import numpy as np
         _, paths = pipeline_output
         rows = _read_csv(paths.data_model / "monte_carlo_outputs.csv")
         if not rows:

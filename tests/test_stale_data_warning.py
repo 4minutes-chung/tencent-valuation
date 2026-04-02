@@ -12,10 +12,8 @@ import unittest
 import warnings
 from unittest.mock import patch
 
-import pandas as pd
 
 import tencent_valuation_v3.overrides as overrides_module
-from tencent_valuation_v3.overrides import _fetch_cny_hkd, _fetch_spot_price_hkd
 
 
 def _run_fx_fallback_path(wacc_config: dict) -> list[warnings.WarningMessage]:
@@ -26,10 +24,8 @@ def _run_fx_fallback_path(wacc_config: dict) -> list[warnings.WarningMessage]:
         with patch.object(overrides_module, "_fetch_cny_hkd", side_effect=OSError("test failure")):
             try:
                 overrides_module._fetch_cny_hkd("2026-02-19", timeout=timeout)
-                fx_source = "live"
             except Exception as exc:
                 _ = float(wacc_config.get("fx_fallback_cny_hkd", 1.08))
-                fx_source = "fallback_fixed"
                 warnings.warn(
                     f"CNY/HKD fetch failed ({exc}); using hardcoded fallback rate {_}. "
                     "Set fx_fallback_cny_hkd in wacc.yaml to override.",

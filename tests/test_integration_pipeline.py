@@ -8,7 +8,6 @@ from unittest import mock
 import pandas as pd
 
 from tencent_valuation_v3.backtest import run_backtest
-from tencent_valuation_v3.paths import build_paths
 from tencent_valuation_v3.pipeline import load_context, run_all
 
 

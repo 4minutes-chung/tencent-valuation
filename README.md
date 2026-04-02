@@ -25,6 +25,12 @@ tencent-valuation-v4 build-overrides --asof 2026-02-19
 tencent-valuation-v4 run-all --asof 2026-02-19 --source-mode synthetic --refresh
 ```
 
+Generate the visual publication pack (story-first outputs):
+
+```bash
+python scripts/generate_v4_visuals.py --asof 2026-03-19
+```
+
 Alternative module invocation (equivalent behavior):
 
 ```bash
@@ -135,6 +141,10 @@ pytest -q
 - `docs/REPO_EVALUATION_2026-04-01.md`: independent repository assessment snapshot
 - `docs/INVESTMENT_REPORT_V4_2026-03-19.md`: investment report with assumptions, base case, methodology, and conclusion
 - `docs/COMPLETE_REPO_REVIEW_2026-04-01.md`: full repo review findings, rerun validation, and reorg results
+- `docs/PUBLICATION_STORYBOOK_V4_2026-03-19.md`: visual-heavy final narrative (assumptions, base case, methodology, conclusion)
+- `docs/figures/2026-03-19/`: generated PNG chart pack (11 visuals + manifest)
+- `docs/paper/tencent_v4_publication_note.tex`: LaTeX publication note with formal equations and figure references
+- `docs/FINAL_AUDIT_AND_RELEASE_NOTE_2026-04-02.md`: end-state audit verdict across code, model, and publication readiness
 
 ## Versioning and History
 

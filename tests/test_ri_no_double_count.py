@@ -98,7 +98,25 @@ class TestRiNoDoubleCount(unittest.TestCase):
             # Old bug would inflate by net_cash * 0.20 = 24.0 HKD bn.
             # The two variants legitimately differ (different book0), but neither
             # should be inflated by a spurious 0.20 * net_cash addend beyond EBO.
-            # Check that the proxy result satisfies EBO identity too.
+            # Check that both variants satisfy EBO identity.
+            book0_with = float(
+                ri_with_book.loc[ri_with_book["scenario"] == scenario, "book_value_open_hkd_bn"].iloc[0]
+            )
+            pv_ri_with = float(
+                ri_with_book.loc[ri_with_book["scenario"] == scenario, "pv_residual_income_hkd_bn"].iloc[0]
+            )
+            pv_tv_with = float(
+                ri_with_book.loc[
+                    ri_with_book["scenario"] == scenario, "pv_terminal_residual_income_hkd_bn"
+                ].iloc[0]
+            )
+            self.assertAlmostEqual(
+                eq_with,
+                book0_with + pv_ri_with + pv_tv_with,
+                places=3,
+                msg=f"EBO identity failed for explicit-book scenario={scenario}",
+            )
+
             book0_proxy = float(
                 ri_proxy.loc[ri_proxy["scenario"] == scenario, "book_value_open_hkd_bn"].iloc[0]
             )

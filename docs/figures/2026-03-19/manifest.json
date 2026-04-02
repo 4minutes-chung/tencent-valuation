@@ -1,0 +1,16 @@
+{
+  "asof": "2026-03-19",
+  "figures": {
+    "dcf_vs_market": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/01_dcf_vs_market.png",
+    "ensemble_vs_dcf": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/02_ensemble_vs_dcf.png",
+    "method_cross_section": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/03_method_cross_section.png",
+    "capm_apt_diagnostics": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/04_capm_apt_diagnostics.png",
+    "monte_carlo_distribution": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/05_monte_carlo_distribution.png",
+    "stress_scenarios": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/06_stress_scenarios.png",
+    "sensitivity_wacc_g": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/07_sensitivity_wacc_g.png",
+    "sensitivity_margin_growth": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/08_sensitivity_margin_growth.png",
+    "backtest_scatter": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/09_backtest_scatter.png",
+    "regime_breakdown": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/10_regime_breakdown.png",
+    "scenario_paths": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/docs/figures/2026-03-19/11_scenario_paths.png"
+  }
+}

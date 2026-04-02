@@ -1,0 +1,115 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+\title{Tencent (0700.HK) V4 Valuation Snapshot:\\A Multi-Method Investment Note}
+\author{Tencent Model Project}
+\date{As-of 2026-03-19}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note summarizes the V4 valuation stack for Tencent and reports a publication-ready
+snapshot with code-verified outputs, quality gates, and a visual evidence pack.
+At the 2026-03-19 snapshot, the model indicates market price exceeds base and
+expected intrinsic values under the maintained assumptions.
+\end{abstract}
+
+\section{Model Setup}
+
+\subsection{Discounted Cash Flow}
+For scenario $s$, enterprise value is:
+\begin{equation}
+EV_s = \sum_{t=1}^{T} \frac{FCFF_{s,t}}{(1+WACC)^t}
++ \frac{TV_s}{(1+WACC)^T},
+\end{equation}
+with Gordon terminal value
+\begin{equation}
+TV_s = \frac{FCFF_{s,T+1}}{WACC - g_s}, \qquad FCFF_{s,T+1}=FCFF_{s,T}(1+g_s).
+\end{equation}
+Equity value is
+\begin{equation}
+EqV_s = EV_s - Debt + Cash - MinorityInterest,
+\end{equation}
+and fair value per share is $P^{\ast}_s = EqV_s/N_{\text{shares}}$.
+
+\subsection{Cost of Capital}
+Official cost of equity uses CAPM with country risk premium:
+\begin{equation}
+R_e^{\mathrm{CAPM}} = R_f + \beta_L \cdot ERP + CRP.
+\end{equation}
+WACC is:
+\begin{equation}
+WACC = \frac{E}{D+E}R_e + \frac{D}{D+E}R_d(1-\tau).
+\end{equation}
+APT estimates are included as diagnostics and excluded from headline discount rates when
+stability gates fail.
+
+\subsection{Ensemble}
+Headline expected fair value aggregates methods $m \in \mathcal{M}$:
+\begin{equation}
+P^{\ast}_{\text{ens},s} = \sum_{m \in \mathcal{M}} \omega_m P^{\ast}_{m,s},
+\qquad \sum_{m \in \mathcal{M}} \omega_m = 1,\quad \omega_m \ge 0.
+\end{equation}
+
+\section{Snapshot Results}
+
+Market price is HKD 533/share. Base DCF fair value is HKD 176.39/share and expected
+ensemble fair value is HKD 170.69/share, both implying large negative margin of safety.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Scenario & DCF (HKD/share) & Ensemble (HKD/share) & MoS vs Market \\
+\midrule
+Base & 176.39 & 198.85 & -66.9\% / -62.7\% \\
+Bad & 117.60 & 150.40 & -77.9\% / -71.8\% \\
+Extreme & 93.92 & 124.17 & -82.4\% / -76.7\% \\
+\bottomrule
+\end{tabular}
+\caption{DCF and ensemble valuation outputs for the 2026-03-19 snapshot.}
+\end{table}
+
+\section{Quality and Identification Caveats}
+
+The QA summary reports 27 checks, 5 warnings, and 2 failures; investor-grade status is false.
+Main caveats are CAPM--APT divergence, elevated ERP assumptions, and weak backtest
+calibration strength from limited sample depth.
+
+\section{Visual Evidence}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.84\textwidth]{../figures/2026-03-19/01_dcf_vs_market.png}
+\caption{DCF fair value by scenario versus market price.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.84\textwidth]{../figures/2026-03-19/05_monte_carlo_distribution.png}
+\caption{Monte Carlo fair-value distribution with market overlay.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.84\textwidth]{../figures/2026-03-19/09_backtest_scatter.png}
+\caption{Backtest signal-strength vs forward 12M return.}
+\end{figure}
+
+\section{Conclusion}
+
+Under current V4 assumptions and diagnostics, the 2026-03-19 snapshot does not support
+a margin-of-safety buy at market price. A bullish conclusion requires both stronger
+fundamental assumptions and improved empirical calibration quality.
+
+\end{document}

@@ -46,7 +46,6 @@ class TestResolveRf(unittest.TestCase):
     def test_rolling_mean_returns_mean_times_12(self) -> None:
         cfg = {"rf_method": "rolling_mean"}
         result = _resolve_rf(self.window, cfg)
-        import numpy as np
         expected = float(pd.Series(self.rf_values).mean() * 12.0)
         self.assertTrue(math.isclose(result, expected, rel_tol=1e-12))
 

@@ -12,20 +12,21 @@
 
 ## Headline Output
 
-- DCF base: fair `455.56` HKD/share, MOS `-17.25%`.
-- DCF bad: fair `264.90` HKD/share, MOS `-51.88%`.
-- DCF extreme: fair `181.25` HKD/share, MOS `-67.07%`.
-- Ensemble bad: `272.05` (band `210.24`..`342.02`).
-- Ensemble base: `428.25` (band `342.02`..`497.40`).
-- Ensemble extreme: `202.85` (band `151.40`..`342.02`).
-- WACC: `9.11%`; CAPM Re `10.17%`; APT unstable `True`.
+- DCF base: fair `176.39` HKD/share, MOS `-66.91%`.
+- DCF bad: fair `117.60` HKD/share, MOS `-77.94%`.
+- DCF extreme: fair `93.92` HKD/share, MOS `-82.38%`.
+- Ensemble bad: `150.40` (band `75.02`..`275.93`).
+- Ensemble base: `198.85` (band `112.17`..`324.63`).
+- Ensemble extreme: `124.17` (band `55.42`..`227.24`).
+- Ensemble expected: `170.69` (band `124.17`..`198.85`).
+- WACC: `16.75%`; CAPM Re `19.93%`; APT unstable `True`.
 
 ## Validation
 
-- QA checks: `21`
-- Warnings: `2`
-- Failures: `0`
-- Investor grade: `YES`
+- QA checks: `27`
+- Warnings: `5`
+- Failures: `2`
+- Investor grade: `NO`
 
 ## Known Limits
 
