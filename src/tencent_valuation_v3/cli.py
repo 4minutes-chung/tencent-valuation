@@ -283,7 +283,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             source_mode=args.source_mode,
         )
         memo_path = report_path.parent / f"tencent_investment_memo_{args.asof}.md"
-        compact_log = report_path.parent / f"tencent_v3_compact_log_{args.asof}.md"
+        compact_log = report_path.parent / f"tencent_v4_compact_log_{args.asof}.md"
         print(json.dumps({"report": str(report_path), "investment_memo": str(memo_path), "compact_log": str(compact_log)}, indent=2))
         return 0
 

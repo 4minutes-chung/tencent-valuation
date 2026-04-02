@@ -26,7 +26,10 @@ def _load_qa(asof: str, paths: ProjectPaths) -> dict:
 
 def _safe_read_csv(path: Path) -> pd.DataFrame:
     if path.exists():
-        return pd.read_csv(path)
+        try:
+            return pd.read_csv(path)
+        except pd.errors.EmptyDataError:
+            return pd.DataFrame()
     return pd.DataFrame()
 
 
@@ -268,12 +271,12 @@ def write_investment_memo(asof: str, paths: ProjectPaths) -> Path:
     investor_grade = bool(qa.get("summary", {}).get("investor_grade", False))
 
     lines: list[str] = []
-    lines.append(f"# Tencent Investment Memo V3 ({asof})")
+    lines.append(f"# Tencent Investment Memo V4 ({asof})")
     lines.append("")
     lines.append("## Thesis")
     lines.append("")
     lines.append("- Official valuation discount rate remains CAPM-based WACC under MM/Hamada target structure.")
-    lines.append("- V3 adds APV, residual income, relative valuation, SOTP/T-value, EVA, Monte Carlo, real options, and reverse DCF cross-checks.")
+    lines.append("- V4 includes APV, residual income, relative valuation, SOTP/T-value, EVA, Monte Carlo, real options, and reverse DCF cross-checks.")
     if apt_unstable:
         lines.append("- APT diagnostic is unstable and excluded from headline discount-rate decisions.")
 
@@ -333,7 +336,7 @@ def write_investment_memo(asof: str, paths: ProjectPaths) -> Path:
 
 def write_compact_log(asof: str, paths: ProjectPaths) -> Path:
     paths.ensure()
-    out = paths.reports / f"tencent_v3_compact_log_{asof}.md"
+    out = paths.reports / f"tencent_v4_compact_log_{asof}.md"
 
     qa = _load_qa(asof, paths)
     wacc = _safe_read_csv(paths.data_model / "wacc_components.csv")
@@ -341,7 +344,7 @@ def write_compact_log(asof: str, paths: ProjectPaths) -> Path:
     report = _safe_read_csv(paths.data_model / "valuation_outputs.csv")
 
     lines: list[str] = []
-    lines.append(f"# Tencent V3 Compact Log ({asof})")
+    lines.append(f"# Tencent V4 Compact Log ({asof})")
     lines.append("")
     lines.append("## Process")
     lines.append("")

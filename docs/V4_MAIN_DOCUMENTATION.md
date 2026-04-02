@@ -7,7 +7,7 @@ Last updated: April 1, 2026
 This document describes the operational behavior of the current `main` branch (V4) in this repository.
 
 Important naming note:
-- Public CLI and package identity: V4 (`tencent-valuation-v4`, version `0.4.0`)
+- Public CLI and package identity: V4 (`tencent-valuation-v4`, version `0.4.1`)
 - Internal module path: `src/tencent_valuation_v3/` (kept for backward compatibility)
 
 ## 2) End-to-End Pipeline
@@ -120,7 +120,7 @@ For richer comps behavior, include additional fundamentals used by comps:
 - `qa_<asof>.json`
 - `tencent_valuation_<asof>.md`
 - `tencent_investment_memo_<asof>.md`
-- `tencent_v3_compact_log_<asof>.md`
+- `tencent_v4_compact_log_<asof>.md`
 
 Legacy/manual artifacts are intentionally not kept in current `main`; use git history for older deliverables.
 

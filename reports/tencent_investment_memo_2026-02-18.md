@@ -1,42 +1,46 @@
-# Tencent Investment Memo (2026-02-18)
+# Tencent Investment Memo V4 (2026-02-18)
 
 ## Thesis
 
-- Tencent valuation is based on a CAPM-anchored WACC with peer-target leverage under MM/Hamada logic.
-- Scenario valuation is decision-framed as base / bad / extreme for downside-aware position sizing.
-- APT diagnostic is unstable for this run and is excluded from headline discount-rate decisions.
+- Official valuation discount rate remains CAPM-based WACC under MM/Hamada target structure.
+- V4 includes APV, residual income, relative valuation, SOTP/T-value, EVA, Monte Carlo, real options, and reverse DCF cross-checks.
+- APT diagnostic is unstable and excluded from headline discount-rate decisions.
 
 ## Key Assumptions
 
-- WACC (official): `7.76%`
-- Cost of Equity (CAPM): `8.60%`
-- Risk-free annualized: `3.37%`
-- ERP annualized: `3.51%`
-- Target D/E: `0.167`
-- APT stability score: `0.404`
+- WACC (official): `10.60%`
+- CAPM cost of equity: `11.64%`
+- APT diagnostic cost of equity: `12.76%`
+- Target D/E: `0.170`
+- Beta stability score: `0.973`
 - Investor-grade QA status: `NOT PASS`
 
-## Scenario Fair Value
+## DCF Scenario Fair Value
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 575.03 | 7.88% |
-| bad | 316.83 | -40.56% |
-| extreme | 211.34 | -60.35% |
+| base | 348.66 | -32.03% |
+| bad | 203.87 | -60.26% |
+| extreme | 146.59 | -71.42% |
+
+## Ensemble Cross-Check
+
+- bad: ensemble `242.58` (range `171.61` to `357.74`).
+- base: ensemble `357.24` (range `274.50` to `445.39`).
+- extreme: ensemble `192.17` (range `124.25` to `357.74`).
+- expected: ensemble `292.35` (range `192.17` to `357.24`).
 
 ## Risks
 
-- capm_apt_gap: CAPM/APT gap 480.8 bps; threshold 150.0 bps.
 - apt_stability_gate: APT diagnostic marked unstable and excluded from headline valuation.
+- backtest_minimum_coverage: Backtest minimum coverage check.
 - backtest_quality_flag: Backtest quality thresholds.
-
-## Confidence
-
-- Overall confidence: MEDIUM-LOW (APT instability and QA gaps require conservative sizing).
+- backtest_ic_gate: Backtest IC (12m) 0.071; threshold 0.100.
+- backtest_calibration_slope: Calibration slope 0.094; |deviation from 1.0| = 0.906.
 
 ## Decision Checklist
 
 - [ ] Override filing inputs updated for current as-of date.
-- [ ] CAPM inputs reviewed (rf, ERP, beta window).
+- [ ] CAPM inputs reviewed (rf, ERP, beta windows).
 - [ ] Scenario assumptions reviewed against current operating trends.
 - [ ] Position sizing and risk limits documented.

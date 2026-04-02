@@ -3,16 +3,20 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import re
+import time
 import warnings
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 import numpy as np
 import pandas as pd
+from bs4 import BeautifulSoup
 
 from .paths import ProjectPaths
 
@@ -52,6 +56,8 @@ REQUIRED_PEER_FUNDAMENTALS_COLS = {
     "shares_out_bn",
 }
 
+_TENCENT_KLINE_CACHE: dict[str, pd.Series] = {}
+
 
 
 def _seed_from_asof(asof: str) -> int:
@@ -79,8 +85,28 @@ def _http_get_bytes(url: str, timeout: int) -> bytes:
             )
         },
     )
-    with urlopen(req, timeout=timeout) as response:
-        return response.read()
+
+    max_attempts = 5
+    for attempt in range(max_attempts):
+        try:
+            with urlopen(req, timeout=timeout) as response:
+                return response.read()
+        except HTTPError as exc:
+            retryable = exc.code in {429, 500, 502, 503, 504}
+            if retryable and attempt < max_attempts - 1:
+                retry_after = exc.headers.get("Retry-After")
+                try:
+                    delay = float(retry_after) if retry_after else 1.0 + attempt
+                except ValueError:
+                    delay = 1.0 + attempt
+                time.sleep(min(delay, 20.0))
+                continue
+            raise
+        except (URLError, TimeoutError, OSError):
+            if attempt < max_attempts - 1:
+                time.sleep(1.0 + attempt)
+                continue
+            raise
 
 
 
@@ -105,24 +131,222 @@ def _stooq_symbol(ticker: str) -> str:
 
 
 
-def _fetch_stooq_close_series(ticker: str, asof: pd.Timestamp, timeout: int) -> pd.Series:
-    symbol = _stooq_symbol(ticker)
-    url = f"https://stooq.com/q/d/l/?s={symbol}&i=d"
-    frame = _read_csv_http(url, timeout=timeout)
+def _yahoo_symbol(ticker: str) -> str:
+    upper = ticker.upper()
+    if upper == "HSI":
+        return "^HSI"
+    return upper
 
-    if "No data" in frame.columns:
-        raise FactorDataError(f"No Stooq data for ticker {ticker} ({symbol})")
 
-    required = {"Date", "Close"}
-    if not required.issubset(frame.columns):
-        raise FactorDataError(f"Stooq response missing columns for {ticker}: {sorted(required - set(frame.columns))}")
 
-    frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
-    frame = frame.dropna(subset=["Date", "Close"]).sort_values("Date")
-    frame = frame.loc[frame["Date"] <= asof, ["Date", "Close"]]
+def _tencent_symbol(ticker: str) -> str:
+    upper = ticker.upper()
+    if upper == "HSI":
+        return "hkHSI"
+    if upper.endswith(".HK"):
+        code = upper.split(".")[0]
+        try:
+            return f"hk{int(code):05d}"
+        except ValueError as exc:
+            raise FactorDataError(f"Invalid HK ticker for Tencent endpoint: {ticker}") from exc
+    raise FactorDataError(f"Unsupported ticker for Tencent endpoint: {ticker}")
 
+
+def _parse_tencent_kline_series(payload: bytes, symbol: str, ticker: str) -> pd.Series:
+    if not payload:
+        raise FactorDataError(f"Empty Tencent payload for {ticker} ({symbol})")
+
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        raise FactorDataError(f"Tencent response is not valid JSON for {ticker} ({symbol})") from exc
+
+    code_raw = parsed.get("code")
+    if str(code_raw) not in {"0"}:
+        raise FactorDataError(f"Tencent endpoint error for {ticker} ({symbol}): code={code_raw}, msg={parsed.get('msg')}")
+
+    data_root = parsed.get("data")
+    if not isinstance(data_root, dict):
+        raise FactorDataError(f"Tencent response missing data block for {ticker} ({symbol})")
+    block = data_root.get(symbol)
+    if not isinstance(block, dict):
+        raise FactorDataError(f"Tencent response missing symbol block for {ticker} ({symbol})")
+
+    rows_raw = block.get("qfqday") or block.get("day") or []
+    if not isinstance(rows_raw, list) or not rows_raw:
+        raise FactorDataError(f"Tencent response has no kline rows for {ticker} ({symbol})")
+
+    rows: list[tuple[pd.Timestamp, float]] = []
+    for row in rows_raw:
+        if not isinstance(row, list) or len(row) < 3:
+            continue
+        date_raw = row[0]
+        close_raw = row[2]
+        date = pd.to_datetime(date_raw, errors="coerce")
+        close = pd.to_numeric(close_raw, errors="coerce")
+        if pd.isna(date) or pd.isna(close):
+            continue
+        ts = pd.Timestamp(date)
+        if ts.tzinfo is not None:
+            ts = ts.tz_localize(None)
+        rows.append((ts.normalize(), float(close)))
+
+    if not rows:
+        raise FactorDataError(f"Tencent kline rows are not parseable for {ticker} ({symbol})")
+
+    frame = pd.DataFrame(rows, columns=["Date", "Close"]).sort_values("Date")
+    series = pd.Series(frame["Close"].astype(float).values, index=frame["Date"], name=ticker)
+    series = series[~series.index.duplicated(keep="last")]
+    return series
+
+
+def _fetch_tencent_close_series(ticker: str, asof: pd.Timestamp, timeout: int, bars: int = 1500) -> pd.Series:
+    symbol = _tencent_symbol(ticker)
+    cached = _TENCENT_KLINE_CACHE.get(symbol)
+    if cached is None:
+        url = f"https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param={symbol},day,,,{bars},qfq"
+        parsed = _parse_tencent_kline_series(_http_get_bytes(url, timeout=timeout), symbol=symbol, ticker=ticker)
+        _TENCENT_KLINE_CACHE[symbol] = parsed
+        cached = parsed
+
+    series = cached.loc[cached.index <= asof]
+    if series.empty:
+        raise FactorDataError(f"No Tencent rows up to {asof.date()} for {ticker} ({symbol})")
+    return series
+
+
+def _parse_stooq_history_page(payload: bytes, symbol: str) -> tuple[pd.DataFrame, int | None]:
+    if not payload:
+        raise FactorDataError(f"Empty Stooq HTML payload for {symbol}")
+
+    html = payload.decode("utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find("table", id="fth1")
+    if table is None:
+        if "Exceeded the daily site bandwidth limit" in html:
+            raise FactorDataError(f"Stooq bandwidth limit exceeded for {symbol}")
+        raise FactorDataError(f"Stooq historical table not found for {symbol}")
+
+    rows: list[tuple[pd.Timestamp, float]] = []
+    for tr in table.find_all("tr"):
+        cells = tr.find_all("td")
+        if len(cells) < 6:
+            continue
+
+        date_text = " ".join(cells[1].get_text(" ", strip=True).split())
+        close_text = cells[5].get_text(" ", strip=True).replace(",", "")
+
+        date = pd.to_datetime(date_text, format="%d %b %Y", errors="coerce")
+        if pd.isna(date):
+            date = pd.to_datetime(date_text, dayfirst=True, errors="coerce")
+        close = pd.to_numeric(close_text, errors="coerce")
+        if pd.isna(date) or pd.isna(close):
+            continue
+
+        ts = pd.Timestamp(date)
+        if ts.tzinfo is not None:
+            ts = ts.tz_localize(None)
+        rows.append((ts.normalize(), float(close)))
+
+    if not rows:
+        raise FactorDataError(f"No historical rows parsed from Stooq HTML for {symbol}")
+
+    max_page: int | None = None
+    for anchor in soup.find_all("a", href=True):
+        href = str(anchor["href"])
+        if "q/d/" not in href:
+            continue
+        match = re.search(r"[?&]l=(\d+)", href)
+        if not match:
+            continue
+        page_no = int(match.group(1))
+        max_page = page_no if max_page is None else max(max_page, page_no)
+
+    frame = pd.DataFrame(rows, columns=["Date", "Close"])
+    frame = frame.drop_duplicates(subset=["Date"], keep="first").sort_values("Date")
+    return frame, max_page
+
+
+def _fetch_stooq_history_frame(symbol: str, asof: pd.Timestamp, timeout: int, lookback_years: int = 5) -> pd.DataFrame:
+    cutoff = asof - pd.DateOffset(years=lookback_years)
+    page = 1
+    max_pages = 200
+    discovered_last_page: int | None = None
+    frames: list[pd.DataFrame] = []
+
+    while page <= max_pages:
+        url = f"https://stooq.com/q/d/?s={symbol}&i=d"
+        if page > 1:
+            url = f"{url}&l={page}"
+
+        page_frame, page_max = _parse_stooq_history_page(_http_get_bytes(url, timeout=timeout), symbol=symbol)
+        frames.append(page_frame)
+
+        if page_max is not None:
+            discovered_last_page = page_max if discovered_last_page is None else max(discovered_last_page, page_max)
+
+        oldest = page_frame["Date"].min()
+        if oldest <= cutoff:
+            break
+
+        if discovered_last_page is not None and page >= discovered_last_page:
+            break
+
+        page += 1
+        time.sleep(0.08)
+
+    if not frames:
+        raise FactorDataError(f"No Stooq HTML history pages parsed for {symbol}")
+
+    frame = pd.concat(frames, ignore_index=True)
+    frame = frame.drop_duplicates(subset=["Date"], keep="first").sort_values("Date")
+    frame = frame.loc[frame["Date"] <= asof]
     if frame.empty:
-        raise FactorDataError(f"No usable Stooq rows up to {asof.date()} for {ticker}")
+        raise FactorDataError(f"No Stooq HTML rows up to {asof.date()} for {symbol}")
+    return frame
+
+
+def _fetch_yahoo_close_series(ticker: str, asof: pd.Timestamp, timeout: int) -> pd.Series:
+    symbol = _yahoo_symbol(ticker)
+    encoded = quote(symbol, safe="")
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{encoded}?interval=1d&range=20y&events=history"
+    payload = _http_get_bytes(url, timeout=timeout)
+    if not payload:
+        raise FactorDataError(f"Empty Yahoo payload for {ticker} ({symbol})")
+
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        raise FactorDataError(f"Yahoo response is not valid JSON for {ticker} ({symbol})") from exc
+
+    chart = parsed.get("chart", {})
+    if chart.get("error"):
+        raise FactorDataError(f"Yahoo chart error for {ticker} ({symbol}): {chart['error']}")
+    results = chart.get("result") or []
+    if not results:
+        raise FactorDataError(f"Yahoo chart has no result for {ticker} ({symbol})")
+
+    first = results[0]
+    timestamps = first.get("timestamp") or []
+    quote_block = (first.get("indicators", {}).get("quote") or [{}])[0]
+    closes = quote_block.get("close") or []
+    if not timestamps or not closes:
+        raise FactorDataError(f"Yahoo chart missing timestamp/close arrays for {ticker} ({symbol})")
+
+    rows: list[tuple[pd.Timestamp, float]] = []
+    for ts_raw, close in zip(timestamps, closes, strict=False):
+        if close is None:
+            continue
+        dt = pd.to_datetime(ts_raw, unit="s", utc=True).tz_localize(None)
+        rows.append((dt, float(close)))
+
+    if not rows:
+        raise FactorDataError(f"Yahoo chart has no non-null close values for {ticker} ({symbol})")
+
+    frame = pd.DataFrame(rows, columns=["Date", "Close"]).sort_values("Date")
+    frame = frame.loc[frame["Date"] <= asof]
+    if frame.empty:
+        raise FactorDataError(f"No usable Yahoo rows up to {asof.date()} for {ticker}")
 
     series = pd.Series(frame["Close"].astype(float).values, index=frame["Date"], name=ticker)
     series = series[~series.index.duplicated(keep="last")]
@@ -130,7 +354,62 @@ def _fetch_stooq_close_series(ticker: str, asof: pd.Timestamp, timeout: int) -> 
 
 
 
+def _fetch_stooq_close_series(ticker: str, asof: pd.Timestamp, timeout: int) -> pd.Series:
+    tencent_error: Exception | None = None
+    try:
+        return _fetch_tencent_close_series(ticker=ticker, asof=asof, timeout=timeout)
+    except Exception as exc:
+        tencent_error = exc
+
+    symbol = _stooq_symbol(ticker)
+    url = f"https://stooq.com/q/d/l/?s={symbol}&i=d"
+    stooq_csv_error: Exception | None = None
+
+    try:
+        frame = _read_csv_http(url, timeout=timeout)
+
+        if "No data" in frame.columns:
+            raise FactorDataError(f"No Stooq data for ticker {ticker} ({symbol})")
+
+        required = {"Date", "Close"}
+        if not required.issubset(frame.columns):
+            raise FactorDataError(f"Stooq response missing columns for {ticker}: {sorted(required - set(frame.columns))}")
+
+        frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
+        frame = frame.dropna(subset=["Date", "Close"]).sort_values("Date")
+        frame = frame.loc[frame["Date"] <= asof, ["Date", "Close"]]
+
+        if frame.empty:
+            raise FactorDataError(f"No usable Stooq rows up to {asof.date()} for {ticker}")
+
+        series = pd.Series(frame["Close"].astype(float).values, index=frame["Date"], name=ticker)
+        series = series[~series.index.duplicated(keep="last")]
+        return series
+    except Exception as exc:
+        stooq_csv_error = exc
+
+    stooq_html_error: Exception | None = None
+    try:
+        frame = _fetch_stooq_history_frame(symbol=symbol, asof=asof, timeout=timeout, lookback_years=5)
+        series = pd.Series(frame["Close"].astype(float).values, index=frame["Date"], name=ticker)
+        series = series[~series.index.duplicated(keep="last")]
+        return series
+    except Exception as exc:
+        stooq_html_error = exc
+
+    try:
+        return _fetch_yahoo_close_series(ticker=ticker, asof=asof, timeout=timeout)
+    except Exception as yahoo_exc:
+        raise FactorDataError(
+            "Live price fetch failed for "
+            f"{ticker}; tencent error: {tencent_error}; stooq csv error: {stooq_csv_error}; "
+            f"stooq html error: {stooq_html_error}; yahoo error: {yahoo_exc}"
+        ) from yahoo_exc
+
+
+
 def _prices_to_weekly_returns(prices: dict[str, pd.Series]) -> pd.DataFrame:
+
     rows: list[dict[str, Any]] = []
     for ticker, series in prices.items():
         weekly = series.resample("W-FRI").last().pct_change().dropna()
@@ -612,7 +891,10 @@ def _build_live_inputs(
     timeout = int(wacc_config.get("http_timeout_seconds", 20))
 
     price_series: dict[str, pd.Series] = {}
-    for ticker in required_tickers:
+    sleep_seconds = float(wacc_config.get("live_price_request_sleep_seconds", 0.35))
+    for idx, ticker in enumerate(required_tickers):
+        if idx > 0 and sleep_seconds > 0:
+            time.sleep(sleep_seconds)
         price_series[ticker] = _fetch_stooq_close_series(ticker, asof=ts, timeout=timeout)
 
     weekly = _prices_to_weekly_returns(price_series)
@@ -692,7 +974,7 @@ def _build_live_inputs(
             "segment_source": segment_source,
             "peer_fundamentals_source": peer_source,
             "sources": {
-                "prices": "stooq",
+                "prices": "tencent_ifzq_gtimg (fallback: stooq, yahoo)",
                 "factors": factors_url,
                 "risk_free": "US Treasury daily yield CSV",
             },

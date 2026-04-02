@@ -4,7 +4,7 @@ This repository is the active codebase for the Tencent (`0700.HK`) multi-method 
 
 Current status (validated on **April 1, 2026**):
 - Active branch: `main`
-- Package version: `0.4.0`
+- Package version: `0.4.1`
 - CLI command: `tencent-valuation-v4`
 - Test status: `183 passed, 24 skipped` (`pytest -q`)
 

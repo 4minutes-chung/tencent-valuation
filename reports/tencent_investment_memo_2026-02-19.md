@@ -1,38 +1,43 @@
-# Tencent Investment Memo V3 (2026-02-19)
+# Tencent Investment Memo V4 (2026-02-19)
 
 ## Thesis
 
 - Official valuation discount rate remains CAPM-based WACC under MM/Hamada target structure.
-- V3 adds APV, residual income, relative valuation, SOTP/T-value, and reverse DCF cross-checks.
+- V4 includes APV, residual income, relative valuation, SOTP/T-value, EVA, Monte Carlo, real options, and reverse DCF cross-checks.
 - APT diagnostic is unstable and excluded from headline discount-rate decisions.
 
 ## Key Assumptions
 
-- WACC (official): `7.76%`
-- CAPM cost of equity: `8.60%`
-- APT diagnostic cost of equity: `13.40%`
-- Target D/E: `0.167`
-- Beta stability score: `0.986`
-- Investor-grade QA status: `PASS`
+- WACC (official): `10.60%`
+- CAPM cost of equity: `11.64%`
+- APT diagnostic cost of equity: `12.76%`
+- Target D/E: `0.170`
+- Beta stability score: `0.973`
+- Investor-grade QA status: `NOT PASS`
 
 ## DCF Scenario Fair Value
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 573.78 | 7.65% |
-| bad | 316.14 | -40.69% |
-| extreme | 210.88 | -60.43% |
+| base | 348.66 | -32.03% |
+| bad | 203.87 | -60.26% |
+| extreme | 146.59 | -71.42% |
 
 ## Ensemble Cross-Check
 
-- bad: ensemble `316.65` (range `265.19` to `351.71`).
-- base: ensemble `528.37` (range `341.39` to `615.62`).
-- extreme: ensemble `229.30` (range `187.71` to `341.39`).
+- bad: ensemble `242.49` (range `171.61` to `356.88`).
+- base: ensemble `357.15` (range `274.50` to `445.39`).
+- extreme: ensemble `192.08` (range `124.25` to `356.88`).
+- expected: ensemble `292.26` (range `192.08` to `357.15`).
 
 ## Risks
 
-- capm_apt_gap: CAPM/APT gap 480.8 bps; threshold 150.0 bps.
 - apt_stability_gate: APT diagnostic marked unstable and excluded from headline valuation.
+- peer_input_coverage: Peer input coverage check against data/raw/<asof>/peer_fundamentals.csv.
+- backtest_minimum_coverage: Backtest minimum coverage check.
+- backtest_quality_flag: Backtest quality thresholds.
+- backtest_ic_gate: Backtest IC (12m) 0.071; threshold 0.100.
+- backtest_calibration_slope: Calibration slope 0.094; |deviation from 1.0| = 0.906.
 
 ## Decision Checklist
 

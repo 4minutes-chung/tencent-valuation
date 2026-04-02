@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import io
+import json
 import re
+import time
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 import pandas as pd
@@ -72,6 +76,8 @@ _RELEASE_SPECS: list[dict[str, str]] = [
     },
 ]
 
+_TENCENT_KLINE_CACHE: dict[str, pd.Series] = {}
+
 
 def _http_get_bytes(url: str, timeout: int = 30) -> bytes:
     request = Request(
@@ -84,8 +90,28 @@ def _http_get_bytes(url: str, timeout: int = 30) -> bytes:
             )
         },
     )
-    with urlopen(request, timeout=timeout) as response:
-        return response.read()
+
+    max_attempts = 5
+    for attempt in range(max_attempts):
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                return response.read()
+        except HTTPError as exc:
+            retryable = exc.code in {429, 500, 502, 503, 504}
+            if retryable and attempt < max_attempts - 1:
+                retry_after = exc.headers.get("Retry-After")
+                try:
+                    delay = float(retry_after) if retry_after else 1.0 + attempt
+                except ValueError:
+                    delay = 1.0 + attempt
+                time.sleep(min(delay, 20.0))
+                continue
+            raise
+        except (URLError, TimeoutError, OSError):
+            if attempt < max_attempts - 1:
+                time.sleep(1.0 + attempt)
+                continue
+            raise
 
 
 def _quarter_end(quarter_label: str) -> str:
@@ -212,31 +238,315 @@ def _extract_latest_segment_values(txt_path: Path) -> tuple[dict[str, float], st
     return output, f"{txt_path.name}:lines{','.join(str(x) for x in hint_lines)}"
 
 
+def _tencent_symbol_for_ticker(ticker: str) -> str:
+    upper = ticker.upper()
+    if upper == "HSI":
+        return "hkHSI"
+    if upper.endswith(".HK"):
+        code = upper.split(".")[0]
+        try:
+            return f"hk{int(code):05d}"
+        except ValueError as exc:
+            raise OverrideBuildError(f"Invalid HK ticker for Tencent endpoint: {ticker}") from exc
+    raise OverrideBuildError(f"Unsupported ticker for Tencent endpoint: {ticker}")
+
+
+def _fetch_tencent_kline_series(symbol: str, timeout: int = 20, bars: int = 1500) -> pd.Series:
+    cached = _TENCENT_KLINE_CACHE.get(symbol)
+    if cached is not None:
+        return cached
+
+    url = f"https://web.ifzq.gtimg.cn/appstock/app/hkfqkline/get?param={symbol},day,,,{bars},qfq"
+    payload = _http_get_bytes(url, timeout=timeout)
+    if not payload:
+        raise OverrideBuildError(f"Empty Tencent payload for {symbol}")
+
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        raise OverrideBuildError(f"Tencent response is not valid JSON for {symbol}") from exc
+
+    code_raw = parsed.get("code")
+    if str(code_raw) not in {"0"}:
+        raise OverrideBuildError(f"Tencent endpoint error for {symbol}: code={code_raw}, msg={parsed.get('msg')}")
+
+    data_root = parsed.get("data")
+    if not isinstance(data_root, dict):
+        raise OverrideBuildError(f"Tencent response missing data block for {symbol}")
+    block = data_root.get(symbol)
+    if not isinstance(block, dict):
+        raise OverrideBuildError(f"Tencent response missing symbol block for {symbol}")
+
+    rows_raw = block.get("qfqday") or block.get("day") or []
+    if not isinstance(rows_raw, list) or not rows_raw:
+        raise OverrideBuildError(f"Tencent response has no kline rows for {symbol}")
+
+    rows: list[tuple[pd.Timestamp, float]] = []
+    for row in rows_raw:
+        if not isinstance(row, list) or len(row) < 3:
+            continue
+        date = pd.to_datetime(row[0], errors="coerce")
+        close = pd.to_numeric(row[2], errors="coerce")
+        if pd.isna(date) or pd.isna(close):
+            continue
+        ts = pd.Timestamp(date)
+        if ts.tzinfo is not None:
+            ts = ts.tz_localize(None)
+        rows.append((ts.normalize(), float(close)))
+
+    if not rows:
+        raise OverrideBuildError(f"Tencent kline rows are not parseable for {symbol}")
+
+    frame = pd.DataFrame(rows, columns=["Date", "Close"]).sort_values("Date")
+    series = pd.Series(frame["Close"].astype(float).values, index=frame["Date"], name=symbol)
+    series = series[~series.index.duplicated(keep="last")]
+    _TENCENT_KLINE_CACHE[symbol] = series
+    return series
+
+
+def _fetch_tencent_close_value(ticker: str, asof: str, timeout: int = 20) -> float:
+    cutoff = pd.Timestamp(asof)
+    symbol = _tencent_symbol_for_ticker(ticker)
+    series = _fetch_tencent_kline_series(symbol=symbol, timeout=timeout)
+    series = series.loc[series.index <= cutoff]
+    if series.empty:
+        raise OverrideBuildError(f"No Tencent close <= {asof} for {ticker} ({symbol})")
+    return float(series.iloc[-1])
+
+
+def _fetch_frankfurter_fx(asof: str, timeout: int = 20) -> tuple[float, str]:
+    payload = _http_get_bytes(f"https://api.frankfurter.app/{asof}?from=CNY&to=HKD", timeout=timeout)
+    if not payload:
+        raise OverrideBuildError("Empty Frankfurter payload for CNY/HKD")
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        raise OverrideBuildError("Frankfurter response is not valid JSON for CNY/HKD") from exc
+    rates = parsed.get("rates")
+    if not isinstance(rates, dict) or "HKD" not in rates:
+        raise OverrideBuildError(f"Frankfurter response missing HKD rate for {asof}")
+    return float(rates["HKD"]), f"frankfurter_cnyhkd_close_{parsed.get('date', asof)}"
+
+
+def _fetch_yahoo_close_value(symbol: str, asof: str, timeout: int = 20) -> float:
+    encoded = quote(symbol, safe="")
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{encoded}?interval=1d&range=20y&events=history"
+    payload = _http_get_bytes(url, timeout=timeout)
+    if not payload:
+        raise OverrideBuildError(f"Empty Yahoo payload for {symbol}")
+
+    try:
+        parsed = json.loads(payload.decode("utf-8"))
+    except json.JSONDecodeError as exc:
+        raise OverrideBuildError(f"Yahoo response is not valid JSON for {symbol}") from exc
+
+    chart = parsed.get("chart", {})
+    if chart.get("error"):
+        raise OverrideBuildError(f"Yahoo chart error for {symbol}: {chart['error']}")
+    results = chart.get("result") or []
+    if not results:
+        raise OverrideBuildError(f"Yahoo chart has no result for {symbol}")
+
+    first = results[0]
+    timestamps = first.get("timestamp") or []
+    quote_block = (first.get("indicators", {}).get("quote") or [{}])[0]
+    closes = quote_block.get("close") or []
+    if not timestamps or not closes:
+        raise OverrideBuildError(f"Yahoo chart missing timestamp/close arrays for {symbol}")
+
+    cutoff = pd.Timestamp(asof)
+    last_close: float | None = None
+    for ts_raw, close in zip(timestamps, closes, strict=False):
+        if close is None:
+            continue
+        dt = pd.to_datetime(ts_raw, unit="s", utc=True).tz_localize(None)
+        if dt <= cutoff:
+            last_close = float(close)
+        else:
+            break
+
+    if last_close is None:
+        raise OverrideBuildError(f"No Yahoo close <= {asof} for {symbol}")
+    return last_close
+
+
+def _parse_stooq_history_page(payload: bytes, symbol: str) -> tuple[pd.DataFrame, int | None]:
+    if not payload:
+        raise OverrideBuildError(f"Empty Stooq HTML payload for {symbol}")
+
+    html = payload.decode("utf-8", errors="ignore")
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find("table", id="fth1")
+    if table is None:
+        if "Exceeded the daily site bandwidth limit" in html:
+            raise OverrideBuildError(f"Stooq bandwidth limit exceeded for {symbol}")
+        raise OverrideBuildError(f"Stooq historical table not found for {symbol}")
+
+    rows: list[tuple[pd.Timestamp, float]] = []
+    for tr in table.find_all("tr"):
+        cells = tr.find_all("td")
+        if len(cells) < 6:
+            continue
+
+        date_text = " ".join(cells[1].get_text(" ", strip=True).split())
+        close_text = cells[5].get_text(" ", strip=True).replace(",", "")
+
+        date = pd.to_datetime(date_text, format="%d %b %Y", errors="coerce")
+        if pd.isna(date):
+            date = pd.to_datetime(date_text, dayfirst=True, errors="coerce")
+        close = pd.to_numeric(close_text, errors="coerce")
+        if pd.isna(date) or pd.isna(close):
+            continue
+
+        ts = pd.Timestamp(date)
+        if ts.tzinfo is not None:
+            ts = ts.tz_localize(None)
+        rows.append((ts.normalize(), float(close)))
+
+    if not rows:
+        raise OverrideBuildError(f"No historical rows parsed from Stooq HTML for {symbol}")
+
+    max_page: int | None = None
+    for anchor in soup.find_all("a", href=True):
+        href = str(anchor["href"])
+        if "q/d/" not in href:
+            continue
+        match = re.search(r"[?&]l=(\d+)", href)
+        if not match:
+            continue
+        page_no = int(match.group(1))
+        max_page = page_no if max_page is None else max(max_page, page_no)
+
+    frame = pd.DataFrame(rows, columns=["Date", "Close"])
+    frame = frame.drop_duplicates(subset=["Date"], keep="first").sort_values("Date")
+    return frame, max_page
+
+
+def _fetch_stooq_close_value(symbol: str, asof: str, timeout: int = 20, lookback_years: int = 5) -> float:
+    cutoff = pd.Timestamp(asof)
+
+    csv_error: Exception | None = None
+    try:
+        payload = _http_get_bytes(f"https://stooq.com/q/d/l/?s={symbol}&i=d", timeout=timeout)
+        if not payload:
+            raise OverrideBuildError(f"Empty Stooq CSV payload for {symbol}")
+        frame = pd.read_csv(io.BytesIO(payload))
+        if "No data" in frame.columns:
+            raise OverrideBuildError(f"No Stooq CSV data for {symbol}")
+        frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
+        frame["Close"] = pd.to_numeric(frame["Close"], errors="coerce")
+        frame = frame.dropna(subset=["Date", "Close"]).sort_values("Date")
+        frame = frame.loc[frame["Date"] <= cutoff]
+        if frame.empty:
+            raise OverrideBuildError(f"No Stooq CSV rows <= {asof} for {symbol}")
+        return float(frame.iloc[-1]["Close"])
+    except Exception as exc:
+        csv_error = exc
+
+    html_error: Exception | None = None
+    try:
+        target_start = cutoff - pd.DateOffset(years=lookback_years)
+        page = 1
+        max_pages = 200
+        discovered_last_page: int | None = None
+        frames: list[pd.DataFrame] = []
+
+        while page <= max_pages:
+            url = f"https://stooq.com/q/d/?s={symbol}&i=d"
+            if page > 1:
+                url = f"{url}&l={page}"
+
+            page_frame, page_max = _parse_stooq_history_page(_http_get_bytes(url, timeout=timeout), symbol=symbol)
+            frames.append(page_frame)
+
+            if page_max is not None:
+                discovered_last_page = page_max if discovered_last_page is None else max(discovered_last_page, page_max)
+
+            oldest = page_frame["Date"].min()
+            if oldest <= target_start:
+                break
+            if discovered_last_page is not None and page >= discovered_last_page:
+                break
+
+            page += 1
+            time.sleep(0.08)
+
+        if not frames:
+            raise OverrideBuildError(f"No Stooq HTML pages parsed for {symbol}")
+
+        frame = pd.concat(frames, ignore_index=True)
+        frame = frame.drop_duplicates(subset=["Date"], keep="first").sort_values("Date")
+        frame = frame.loc[frame["Date"] <= cutoff]
+        if frame.empty:
+            raise OverrideBuildError(f"No Stooq HTML rows <= {asof} for {symbol}")
+        return float(frame.iloc[-1]["Close"])
+    except Exception as exc:
+        html_error = exc
+
+    raise OverrideBuildError(
+        f"Failed Stooq close fetch for {symbol}; csv error: {csv_error}; html error: {html_error}"
+    ) from html_error
+
+
 def _fetch_cny_hkd(asof: str, timeout: int = 20) -> tuple[float, str]:
-    frame = pd.read_csv(io.BytesIO(_http_get_bytes("https://stooq.com/q/d/l/?s=cnyhkd&i=d", timeout=timeout)))
-    if "No data" in frame.columns:
-        raise OverrideBuildError("No CNYHKD data from Stooq")
-    frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
-    frame = frame.dropna(subset=["Date", "Close"]).sort_values("Date")
-    frame = frame.loc[frame["Date"] <= pd.Timestamp(asof)]
-    if frame.empty:
-        raise OverrideBuildError("No CNYHKD rows <= asof")
-    return float(frame.iloc[-1]["Close"]), "stooq_cnyhkd_close"
+    frankfurter_error: Exception | None = None
+    try:
+        return _fetch_frankfurter_fx(asof=asof, timeout=timeout)
+    except Exception as exc:
+        frankfurter_error = exc
+
+    stooq_error: Exception | None = None
+    try:
+        return _fetch_stooq_close_value("cnyhkd", asof=asof, timeout=timeout), "stooq_cnyhkd_close"
+    except Exception as exc:
+        stooq_error = exc
+
+    try:
+        return _fetch_yahoo_close_value("CNYHKD=X", asof=asof, timeout=timeout), "yahoo_cnyhkd_close"
+    except Exception as yahoo_exc:
+        raise OverrideBuildError(
+            f"Failed CNY/HKD fetch; frankfurter error: {frankfurter_error}; "
+            f"stooq error: {stooq_error}; yahoo error: {yahoo_exc}"
+        ) from yahoo_exc
+
+
+def _yahoo_symbol_for_ticker(ticker: str) -> str:
+    upper = ticker.upper()
+    if upper == "HSI":
+        return "^HSI"
+    return upper
 
 
 def _fetch_spot_price_hkd(ticker: str, asof: str, timeout: int = 20) -> float:
-    symbol = ticker.lower()
+    tencent_error: Exception | None = None
+    try:
+        return _fetch_tencent_close_value(ticker=ticker, asof=asof, timeout=timeout)
+    except Exception as exc:
+        tencent_error = exc
+
+    stooq_symbol = ticker.lower()
     if ticker.upper().endswith(".HK"):
-        symbol = f"{int(ticker.split('.')[0])}.hk"
-    frame = pd.read_csv(io.BytesIO(_http_get_bytes(f"https://stooq.com/q/d/l/?s={symbol}&i=d", timeout=timeout)))
-    if "No data" in frame.columns:
-        raise OverrideBuildError(f"No price data for {ticker}")
-    frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
-    frame = frame.dropna(subset=["Date", "Close"]).sort_values("Date")
-    frame = frame.loc[frame["Date"] <= pd.Timestamp(asof)]
-    if frame.empty:
-        raise OverrideBuildError(f"No price rows <= asof for {ticker}")
-    return float(frame.iloc[-1]["Close"])
+        code = ticker.split(".")[0]
+        try:
+            code = str(int(code))
+        except ValueError:
+            code = code.lower()
+        stooq_symbol = f"{code}.hk"
+
+    stooq_error: Exception | None = None
+    try:
+        return _fetch_stooq_close_value(stooq_symbol, asof=asof, timeout=timeout)
+    except Exception as exc:
+        stooq_error = exc
+
+    yahoo_symbol = _yahoo_symbol_for_ticker(ticker)
+    try:
+        return _fetch_yahoo_close_value(yahoo_symbol, asof=asof, timeout=timeout)
+    except Exception as yahoo_exc:
+        raise OverrideBuildError(
+            f"Failed spot price fetch for {ticker}; tencent error: {tencent_error}; "
+            f"stooq error: {stooq_error}; yahoo error: {yahoo_exc}"
+        ) from yahoo_exc
 
 
 def _collect_result_links(financial_news_html: Path) -> dict[str, str]:

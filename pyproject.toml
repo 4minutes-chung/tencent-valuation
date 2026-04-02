@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tencent-valuation-v4"
-version = "0.4.0"
+version = "0.4.1"
 description = "Tencent (0700.HK) valuation pipeline V4 with multi-method stack"
 readme = "README.md"
 requires-python = ">=3.10"

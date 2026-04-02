@@ -102,7 +102,7 @@ Reports cleanup was applied so `main` keeps only active V4 outputs.
   - `qa_<asof>.json`
   - `tencent_valuation_<asof>.md`
   - `tencent_investment_memo_<asof>.md`
-  - `tencent_v3_compact_log_<asof>.md`
+  - `tencent_v4_compact_log_<asof>.md`
 - Legacy/manual report artifacts were removed from current `main`.
 - Historical copies remain available in git commit history.
 
