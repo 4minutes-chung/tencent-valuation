@@ -85,37 +85,37 @@ This synthetic output is retained for stress-testing and code verification, **no
 The charts below are generated from the reproducible synthetic diagnostic run and are best read as sensitivity and stress visuals.
 
 ### 6.1 Core valuation gap
-![DCF vs market](figures/2026-03-19/01_dcf_vs_market.png)
+![DCF vs market](figures/2026-04-02/01_dcf_vs_market.png)
 
 ### 6.2 Ensemble vs DCF
-![Ensemble vs DCF](figures/2026-03-19/02_ensemble_vs_dcf.png)
+![Ensemble vs DCF](figures/2026-04-02/02_ensemble_vs_dcf.png)
 
 ### 6.3 Method cross-section (base)
-![Method cross section](figures/2026-03-19/03_method_cross_section.png)
+![Method cross section](figures/2026-04-02/03_method_cross_section.png)
 
 ### 6.4 Cost-of-equity diagnostics
-![CAPM APT diagnostics](figures/2026-03-19/04_capm_apt_diagnostics.png)
+![CAPM APT diagnostics](figures/2026-04-02/04_capm_apt_diagnostics.png)
 
 ### 6.5 Monte Carlo distribution
-![Monte Carlo distribution](figures/2026-03-19/05_monte_carlo_distribution.png)
+![Monte Carlo distribution](figures/2026-04-02/05_monte_carlo_distribution.png)
 
 ### 6.6 Stress scenarios
-![Stress scenarios](figures/2026-03-19/06_stress_scenarios.png)
+![Stress scenarios](figures/2026-04-02/06_stress_scenarios.png)
 
 ### 6.7 WACC-growth sensitivity
-![WACC growth sensitivity](figures/2026-03-19/07_sensitivity_wacc_g.png)
+![WACC growth sensitivity](figures/2026-04-02/07_sensitivity_wacc_g.png)
 
 ### 6.8 Margin-growth sensitivity
-![Margin growth sensitivity](figures/2026-03-19/08_sensitivity_margin_growth.png)
+![Margin growth sensitivity](figures/2026-04-02/08_sensitivity_margin_growth.png)
 
 ### 6.9 Backtest signal-quality scatter
-![Backtest scatter](figures/2026-03-19/09_backtest_scatter.png)
+![Backtest scatter](figures/2026-04-02/09_backtest_scatter.png)
 
 ### 6.10 Regime hit-rate view
-![Regime breakdown](figures/2026-03-19/10_regime_breakdown.png)
+![Regime breakdown](figures/2026-04-02/10_regime_breakdown.png)
 
 ### 6.11 Scenario assumption paths
-![Scenario paths](figures/2026-03-19/11_scenario_paths.png)
+![Scenario paths](figures/2026-04-02/11_scenario_paths.png)
 
 ## 7) Final Decision Statement
 

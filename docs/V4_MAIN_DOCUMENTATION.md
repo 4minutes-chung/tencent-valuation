@@ -180,6 +180,7 @@ CI workflow (`.github/workflows/ci.yml`):
 
 For a complete investment write-up (assumptions, base case, methodology, and conclusion), see:
 
-- `docs/INVESTMENT_REPORT_V4_2026-03-19.md`
+- `docs/INVESTMENT_REPORT_V4_2026-03-19.md` (formal narrative snapshot)
+- `docs/RUN_SUMMARY_2026-04-02.md` (latest run table + outputs + visual pack)
 
-This report is a date-stamped valuation snapshot and should be regenerated/updated for new as-of dates.
+These are date-stamped valuation snapshots and should be regenerated/updated for new as-of dates.

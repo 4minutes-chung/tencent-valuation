@@ -56,7 +56,7 @@ The harsher synthetic outputs (including near `-67%`) are retained as stress dia
 
 ### Visual coverage: `strong`
 - 11 generated charts:
-  - `docs/figures/2026-03-19/*.png`
+  - `docs/figures/2026-04-02/*.png`
 - Reproducible with:
   - `python scripts/generate_v4_visuals.py --asof 2026-03-19`
 

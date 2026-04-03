@@ -1,4 +1,4 @@
-# Tencent Investment Memo V4 (2026-02-19)
+# Tencent Investment Memo V4 (2026-04-02)
 
 ## Thesis
 
@@ -8,36 +8,34 @@
 
 ## Key Assumptions
 
-- WACC (official): `10.60%`
-- CAPM cost of equity: `11.64%`
+- WACC (official): `10.52%`
+- CAPM cost of equity: `11.59%`
 - APT diagnostic cost of equity: `12.76%`
-- Target D/E: `0.170`
-- Beta stability score: `0.973`
+- Target D/E: `0.179`
+- Beta stability score: `0.971`
 - Investor-grade QA status: `NOT PASS`
 
 ## DCF Scenario Fair Value
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 348.66 | -32.03% |
-| bad | 203.87 | -60.26% |
-| extreme | 146.59 | -71.42% |
+| base | 354.36 | -27.56% |
+| bad | 206.34 | -57.82% |
+| extreme | 147.87 | -69.77% |
 
 ## Ensemble Cross-Check
 
-- bad: ensemble `242.49` (range `171.61` to `356.88`).
-- base: ensemble `357.15` (range `274.50` to `445.39`).
-- extreme: ensemble `192.08` (range `124.25` to `356.88`).
-- expected: ensemble `292.26` (range `192.08` to `357.15`).
+- bad: ensemble `244.64` (range `172.93` to `363.11`).
+- base: ensemble `361.08` (range `276.83` to `445.89`).
+- extreme: ensemble `193.66` (range `125.17` to `363.11`).
+- expected: ensemble `295.21` (range `193.66` to `361.08`).
 
 ## Risks
 
 - apt_stability_gate: APT diagnostic marked unstable and excluded from headline valuation.
-- peer_input_coverage: Peer input coverage check against data/raw/<asof>/peer_fundamentals.csv.
 - backtest_minimum_coverage: Backtest minimum coverage check.
 - backtest_quality_flag: Backtest quality thresholds.
-- backtest_ic_gate: Backtest IC (12m) 0.071; threshold 0.100.
-- backtest_calibration_slope: Calibration slope 0.094; |deviation from 1.0| = 0.906.
+- backtest_calibration_slope: Calibration slope 0.246; |deviation from 1.0| = 0.754.
 
 ## Decision Checklist
 
