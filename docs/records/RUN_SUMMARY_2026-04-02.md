@@ -9,6 +9,11 @@
 - FX used (CNY/HKD): `1.1362` (`frankfurter_cnyhkd_close_2026-04-02`)
 - WACC: `10.52%`
 
+Companion records:
+- `docs/ASSUMPTION_REGISTER_2026-04-02.md`
+- `docs/RUN_LEDGER_2026-04-02.md`
+- `docs/INVESTMENT_REPORT_V4_2026-04-02.md`
+
 ## DCF Output
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
