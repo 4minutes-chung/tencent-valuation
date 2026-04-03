@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from tencent_valuation_v3.backtest import (
+from tencent_valuation_v4.backtest import (
     _calibration_slope,
     _hit_rate_by_quintile,
     _information_coefficient,

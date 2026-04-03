@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 import unittest
 
-from tencent_valuation_v3.wacc import blume_adjust, vasicek_adjust
+from tencent_valuation_v4.wacc import blume_adjust, vasicek_adjust
 
 
 class TestVasicekAdjust(unittest.TestCase):

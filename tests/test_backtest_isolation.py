@@ -15,11 +15,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.backtest import run_backtest
-from tencent_valuation_v3.config import load_yaml
-from tencent_valuation_v3.factors import run_factors
-from tencent_valuation_v3.paths import build_paths
-from tencent_valuation_v3.wacc import run_wacc
+from tencent_valuation_v4.backtest import run_backtest
+from tencent_valuation_v4.config import load_yaml
+from tencent_valuation_v4.factors import run_factors
+from tencent_valuation_v4.paths import build_paths
+from tencent_valuation_v4.wacc import run_wacc
 
 
 def _md5(path: Path) -> str:

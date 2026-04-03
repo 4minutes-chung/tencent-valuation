@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from tencent_valuation_v3.real_options import RealOptionsArtifacts, black_scholes_call, run_real_options
+from tencent_valuation_v4.real_options import RealOptionsArtifacts, black_scholes_call, run_real_options
 
 
 WACC_CONFIG = {
@@ -58,7 +58,7 @@ def ro_paths(tmp_path: Path) -> Path:
 
 
 def _get_paths(p: Path):
-    from tencent_valuation_v3.paths import build_paths
+    from tencent_valuation_v4.paths import build_paths
     paths = build_paths(p)
     paths.ensure()
     return paths
@@ -130,7 +130,7 @@ class TestRunRealOptions:
         mods = [k for k in sys.modules if "real_options" in k]
         for m in mods:
             del sys.modules[m]
-        import tencent_valuation_v3.real_options as ro_mod
+        import tencent_valuation_v4.real_options as ro_mod
         import inspect
         source = inspect.getsource(ro_mod)
         assert "scipy" not in source

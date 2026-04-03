@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.ensemble import _normalize_weights
-from tencent_valuation_v3.pipeline import run_all
+from tencent_valuation_v4.ensemble import _normalize_weights
+from tencent_valuation_v4.pipeline import run_all
 
 
-class V3MethodTests(unittest.TestCase):
+class V4MethodTests(unittest.TestCase):
     def _setup_tmp_root(self) -> Path:
         repo_root = Path(__file__).resolve().parents[1]
         tmp_root = Path(tempfile.mkdtemp())
@@ -112,7 +112,7 @@ class V3MethodTests(unittest.TestCase):
         self.assertAlmostEqual(sum(normalized.values()), 1.0, places=12)
         self.assertGreater(normalized["a"], normalized["b"])
 
-    def test_v3_output_contracts(self) -> None:
+    def test_v4_output_contracts(self) -> None:
         tmp_root = self._setup_tmp_root()
         self.addCleanup(lambda: shutil.rmtree(tmp_root, ignore_errors=True))
         asof = "2026-02-19"

@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from tencent_valuation_v3.wacc import WaccError, _fama_macbeth_lambdas
+from tencent_valuation_v4.wacc import WaccError, _fama_macbeth_lambdas
 
 
 def _make_synthetic_data(

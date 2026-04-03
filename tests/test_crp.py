@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.wacc import capm_cost_of_equity
+from tencent_valuation_v4.wacc import capm_cost_of_equity
 
 
 class TestCrpMath(unittest.TestCase):
@@ -39,7 +39,7 @@ class TestCrpMath(unittest.TestCase):
 
     def test_crp_stored_in_wacc_components(self) -> None:
         """When run_wacc writes components, crp column must be present and correct."""
-        from tencent_valuation_v3.pipeline import run_all
+        from tencent_valuation_v4.pipeline import run_all
 
         tmp_root = Path(tempfile.mkdtemp())
         try:
@@ -110,7 +110,7 @@ class TestCrpMath(unittest.TestCase):
 
     def test_run_all_with_crp_produces_valid_output(self) -> None:
         """Pipeline with CRP > 0 still produces ordered scenario outputs."""
-        from tencent_valuation_v3.pipeline import run_all
+        from tencent_valuation_v4.pipeline import run_all
 
         tmp_root = Path(tempfile.mkdtemp())
         try:

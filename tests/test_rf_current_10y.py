@@ -6,7 +6,7 @@ import unittest
 
 import pandas as pd
 
-from tencent_valuation_v3.wacc import _resolve_rf
+from tencent_valuation_v4.wacc import _resolve_rf
 
 
 def _make_monthly(rf_values: list[float]) -> pd.DataFrame:

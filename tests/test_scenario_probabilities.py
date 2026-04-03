@@ -50,7 +50,7 @@ class TestExpectedValueRow:
         assert abs(ev - expected) < 1e-6
 
     def test_probabilities_sum_to_one(self):
-        from tencent_valuation_v3.config import load_yaml
+        from tencent_valuation_v4.config import load_yaml
         from pathlib import Path
         config_path = Path("C:/Projects/tencent-model-full/config/method_weights.yaml")
         if not config_path.exists():
@@ -61,7 +61,7 @@ class TestExpectedValueRow:
         assert abs(total - 1.0) < 1e-6
 
     def test_method_weights_sum_to_one(self):
-        from tencent_valuation_v3.config import load_yaml
+        from tencent_valuation_v4.config import load_yaml
         from pathlib import Path
         config_path = Path("C:/Projects/tencent-model-full/config/method_weights.yaml")
         if not config_path.exists():
@@ -81,7 +81,7 @@ class TestExpectedValueRow:
         assert scenarios["extreme"] <= ev <= scenarios["base"]
 
     def test_stress_probabilities_below_one(self):
-        from tencent_valuation_v3.config import load_yaml
+        from tencent_valuation_v4.config import load_yaml
         from pathlib import Path
         config_path = Path("C:/Projects/tencent-model-full/config/scenarios.yaml")
         if not config_path.exists():

@@ -37,6 +37,16 @@ def _append_check(checks: list[dict[str, Any]], name: str, status: str, metric: 
     )
 
 
+def _read_first_row(path: Path) -> pd.Series | None:
+    try:
+        frame = pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        return None
+    if frame.empty:
+        return None
+    return frame.iloc[0]
+
+
 def run_qa(
     asof: str,
     paths: ProjectPaths,
@@ -78,8 +88,8 @@ def run_qa(
         check_status["segment_sum_to_total"] = "warn"
 
     wacc_path = paths.data_model / "wacc_components.csv"
-    if wacc_path.exists():
-        wacc = pd.read_csv(wacc_path).iloc[0]
+    wacc = _read_first_row(wacc_path) if wacc_path.exists() else None
+    if wacc is not None:
         gap_bps = float(wacc["capm_apt_gap_bps"])
         limit = float(wacc_config.get("capm_apt_alert_bps", 150))
         gap_status = "pass" if gap_bps <= limit else "warn"
@@ -165,6 +175,15 @@ def run_qa(
             f"Beta adjustment method: {beta_adj!r}. Vasicek or Blume required for investor-grade.",
         )
         check_status["beta_adjustment_applied"] = beta_adj_status
+    elif wacc_path.exists():
+        _append_check(
+            checks,
+            "wacc_components",
+            "warn",
+            None,
+            "wacc_components.csv is empty.",
+        )
+        check_status["wacc_components"] = "warn"
     else:
         _append_check(
             checks,
@@ -375,6 +394,9 @@ def run_qa(
         )
         check_status["source_manifest_health"] = "warn"
 
+    source_mode_value = str(source_mode or "").strip().lower()
+    synthetic_like_source = source_mode_value.startswith("synthetic")
+
     scen_bounds = qa_gates.get("scenario_bounds", {})
     growth_min = float(scen_bounds.get("growth_min", -0.5))
     growth_max = float(scen_bounds.get("growth_max", 0.5))
@@ -560,8 +582,8 @@ def run_qa(
     min_ic_12m = float(bt_cfg.get("min_ic_12m", 0.10))
     max_slope_dev = float(bt_cfg.get("max_calibration_slope_deviation", 0.50))
 
-    if backtest_summary_path.exists():
-        bt = pd.read_csv(backtest_summary_path).iloc[0]
+    bt = _read_first_row(backtest_summary_path) if backtest_summary_path.exists() else None
+    if bt is not None:
         n_points = int(bt.get("n_points", 0))
         hit12 = float(bt.get("hit_rate_12m", float("nan")))
         cali_bucket = float(bt.get("calibration_mae_12m_bucket", bt.get("calibration_mae_12m", float("nan"))))
@@ -570,7 +592,7 @@ def run_qa(
         cali_selected = cali_bucket if calibration_metric == "bucket" else cali_raw
 
         coverage_ok = n_points >= min_points
-        coverage_fail_on_false = source_mode != "synthetic"
+        coverage_fail_on_false = not synthetic_like_source
         coverage_status = _status_from_bool(coverage_ok, fail_on_false=coverage_fail_on_false)
         _append_check(
             checks,
@@ -638,6 +660,23 @@ def run_qa(
                 f"Calibration slope {slope_12m:.3f}; |deviation from 1.0| = {slope_dev:.3f}.",
             )
             check_status["backtest_calibration_slope"] = slope_status
+    elif backtest_summary_path.exists():
+        _append_check(
+            checks,
+            "backtest_minimum_coverage",
+            "warn",
+            {"n_points": None, "min_points": min_points},
+            "backtest_summary.csv is empty.",
+        )
+        check_status["backtest_minimum_coverage"] = "warn"
+        _append_check(
+            checks,
+            "backtest_quality_flag",
+            "warn",
+            None,
+            "Backtest quality cannot be evaluated with an empty backtest_summary.csv.",
+        )
+        check_status["backtest_quality_flag"] = "warn"
     else:
         _append_check(
             checks,

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.backtest import _load_vintage_config, _compute_metrics
+from tencent_valuation_v4.backtest import _load_vintage_config, _compute_metrics
 
 
 FALLBACK = {"forecast_years": 7, "scenarios": {"base": {"terminal_g": 0.025}}}

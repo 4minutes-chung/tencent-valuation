@@ -7,8 +7,8 @@ from unittest import mock
 
 import pandas as pd
 
-from tencent_valuation_v3.backtest import run_backtest
-from tencent_valuation_v3.pipeline import load_context, run_all
+from tencent_valuation_v4.backtest import run_backtest
+from tencent_valuation_v4.pipeline import load_context, run_all
 
 
 class IntegrationPipelineTests(unittest.TestCase):
@@ -167,7 +167,7 @@ class IntegrationPipelineTests(unittest.TestCase):
             index=pd.date_range(start="2020-01-01", periods=2200, freq="D"),
             name="0700.HK",
         )
-        with mock.patch("tencent_valuation_v3.backtest.fetch_close_series_for_ticker", return_value=mock_prices):
+        with mock.patch("tencent_valuation_v4.backtest.fetch_close_series_for_ticker", return_value=mock_prices):
             artifacts = run_backtest(
                 start="2024-01-01",
                 end="2025-03-31",

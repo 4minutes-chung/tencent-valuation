@@ -5,7 +5,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from tencent_valuation_v3.dcf import DcfError, _blend_segment_growth
+from tencent_valuation_v4.dcf import DcfError, _blend_segment_growth
 
 
 def _make_segment_df(shares: dict[str, float], period: str = "2025-09-30") -> pd.DataFrame:

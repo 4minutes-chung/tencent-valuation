@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.pipeline import run_all
+from tencent_valuation_v4.pipeline import run_all
 
 
 class TestApvIndependence(unittest.TestCase):

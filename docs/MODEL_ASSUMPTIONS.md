@@ -11,7 +11,7 @@ It is intended to be the complete non-code assumption reference for this snapsho
 - Source mode: `live`
 - Parser version: `v4.0`
 - Package/CLI line: `tencent-valuation-v4` (`0.4.1`)
-- Internal module path: `src/tencent_valuation_v3/` (compatibility path)
+- Canonical module path: `src/tencent_valuation_v4/`
 
 ## 1) Data and Provenance Assumptions
 

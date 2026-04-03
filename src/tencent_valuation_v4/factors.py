@@ -57,6 +57,7 @@ REQUIRED_PEER_FUNDAMENTALS_COLS = {
 }
 
 _TENCENT_KLINE_CACHE: dict[str, pd.Series] = {}
+_PROCESSED_CACHE_MANIFEST = "factors_cache_manifest.json"
 
 
 
@@ -823,6 +824,46 @@ def _default_artifacts(paths: ProjectPaths) -> FactorArtifacts:
     )
 
 
+def _artifacts_match_asof(paths: ProjectPaths, artifacts: FactorArtifacts, asof: str) -> bool:
+    manifest_path = paths.data_raw / asof / "factors_source_manifest.json"
+    if not manifest_path.exists():
+        return False
+
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if str(manifest.get("asof", "")).strip() != asof:
+        return False
+
+    processed_manifest_path = paths.data_processed / _PROCESSED_CACHE_MANIFEST
+    if not processed_manifest_path.exists():
+        return False
+    try:
+        processed_manifest = json.loads(processed_manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if str(processed_manifest.get("asof", "")).strip() != asof:
+        return False
+
+    try:
+        fin = pd.read_csv(artifacts.tencent_financials)
+    except (OSError, pd.errors.EmptyDataError):
+        return False
+    if fin.empty or "asof" not in fin.columns:
+        return False
+
+    return str(fin.iloc[0]["asof"]) == asof
+
+
+def _write_processed_cache_manifest(paths: ProjectPaths, asof: str, artifacts: FactorArtifacts) -> None:
+    payload = {
+        "asof": asof,
+        "files": {key: str(path) for key, path in artifacts.__dict__.items()},
+    }
+    out = paths.data_processed / _PROCESSED_CACHE_MANIFEST
+    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
 
 def _write_source_manifest(paths: ProjectPaths, asof: str, payload: dict[str, Any]) -> None:
     raw_dir = paths.data_raw / asof
@@ -1003,7 +1044,15 @@ def run_factors(
         raise FactorDataError(f"Invalid source mode: {mode}")
 
     all_exist = all(path.exists() for path in artifacts.__dict__.values())
-    if refresh or not all_exist:
+    cache_ok = all_exist and _artifacts_match_asof(paths, artifacts, asof)
+    if not refresh and all_exist and not cache_ok:
+        warnings.warn(
+            f"Processed factor artifacts are stale for asof={asof}; rebuilding inputs.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+
+    if refresh or not cache_ok:
         build_frames: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]
 
         if mode in {"auto", "live"}:
@@ -1071,6 +1120,7 @@ def run_factors(
             f"monthly_factors.csv missing columns: {sorted(required_cols.difference(monthly_factors.columns))}"
         )
 
+    _write_processed_cache_manifest(paths, asof, artifacts)
     return artifacts
 
 

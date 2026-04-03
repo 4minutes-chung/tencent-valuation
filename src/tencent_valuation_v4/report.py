@@ -186,27 +186,42 @@ def write_report(asof: str, paths: ProjectPaths) -> Path:
         lines.append("")
         lines.append("## Backtest Performance")
         lines.append("")
-        for col, label in [
-            ("n_points", "Data points"),
-            ("hit_rate_12m", "12m directional hit rate"),
-            ("information_coefficient_12m", "IC (12m)"),
-            ("calibration_slope_12m", "Calibration slope (12m)"),
-            ("rmse_12m", "RMSE (12m)"),
-            ("ic_calibration", "IC (calibration split)"),
-            ("ic_validation", "IC (validation split)"),
-        ]:
-            val = bt.get(col)
-            if val is not None and str(val) not in ("nan", "None"):
-                try:
-                    fval = float(val)
-                    if col == "n_points":
-                        lines.append(f"- {label}: `{int(fval)}`")
-                    elif col in ("hit_rate_12m",):
-                        lines.append(f"- {label}: `{fval:.1%}`")
-                    else:
-                        lines.append(f"- {label}: `{fval:.4f}`")
-                except (ValueError, TypeError):
-                    pass
+        metric_specs = [
+            (["n_points"], "Data points", "int"),
+            (["hit_rate_12m"], "12m directional hit rate", "pct"),
+            (["information_coefficient_12m"], "IC (12m)", "float"),
+            (["calibration_slope_12m"], "Calibration slope (12m)", "float"),
+            (["rmse_12m"], "RMSE (12m)", "float"),
+            (
+                ["information_coefficient_12m_calibration", "ic_calibration"],
+                "IC (calibration split)",
+                "float",
+            ),
+            (
+                ["information_coefficient_12m_validation", "ic_validation"],
+                "IC (validation split)",
+                "float",
+            ),
+        ]
+        for candidates, label, fmt in metric_specs:
+            val = None
+            for col in candidates:
+                candidate = bt.get(col)
+                if candidate is not None and str(candidate) not in ("nan", "None"):
+                    val = candidate
+                    break
+            if val is None:
+                continue
+            try:
+                fval = float(val)
+                if fmt == "int":
+                    lines.append(f"- {label}: `{int(fval)}`")
+                elif fmt == "pct":
+                    lines.append(f"- {label}: `{fval:.1%}`")
+                else:
+                    lines.append(f"- {label}: `{fval:.4f}`")
+            except (ValueError, TypeError):
+                pass
         bt_regime = _safe_read_csv(paths.data_model / "backtest_regime_breakdown.csv")
         if not bt_regime.empty:
             lines.append("")

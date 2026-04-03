@@ -20,7 +20,7 @@ def _build_qa_inputs(
     beta_adjustment: str = "vasicek",
 ) -> tuple:
     """Scaffold minimum files for run_qa and return (paths, wacc_config, qa_gates, scenarios_config)."""
-    from tencent_valuation_v3.paths import build_paths
+    from tencent_valuation_v4.paths import build_paths
 
     processed = tmp_path / "data" / "processed"
     processed.mkdir(parents=True, exist_ok=True)
@@ -108,7 +108,7 @@ def _build_qa_inputs(
 
 
 def _run_qa_and_load(paths, wacc_config, qa_gates, scenarios_config, asof="2025-03-31"):
-    from tencent_valuation_v3.qa import run_qa
+    from tencent_valuation_v4.qa import run_qa
     artifacts = run_qa(asof, paths, wacc_config, qa_gates, peers=[], scenarios_config=scenarios_config)
     with artifacts.qa_report_json.open(encoding="utf-8") as f:
         return json.load(f)
@@ -202,5 +202,54 @@ class TestStressCoverageGate:
         paths, wc, qg, sc = _build_qa_inputs(tmp_path, n_stress=0)
         report = _run_qa_and_load(paths, wc, qg, sc)
         check = _get_check(report, "stress_scenario_coverage")
+        assert check is not None
+        assert check["status"] == "warn"
+
+
+class TestBacktestCoverageSourceMode:
+    def test_synthetic_fallback_low_coverage_warns(self, tmp_path: Path):
+        asof = "2025-03-31"
+        paths, wc, qg, sc = _build_qa_inputs(tmp_path)
+
+        pd.DataFrame(
+            [
+                {
+                    "n_points": 1,
+                    "hit_rate_12m": 0.50,
+                    "calibration_mae_12m_bucket": 0.20,
+                    "interval_coverage_12m": 0.50,
+                }
+            ]
+        ).to_csv(paths.data_model / "backtest_summary.csv", index=False)
+
+        manifest_path = paths.data_raw / asof / "factors_source_manifest.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(
+            json.dumps({"asof": asof, "mode": "synthetic_fallback", "tickers": []}),
+            encoding="utf-8",
+        )
+
+        report = _run_qa_and_load(paths, wc, qg, sc, asof=asof)
+        check = _get_check(report, "backtest_minimum_coverage")
+        assert check is not None
+        assert check["status"] == "warn"
+
+
+class TestEmptyCsvHandling:
+    def test_empty_wacc_components_warns_instead_of_crashing(self, tmp_path: Path):
+        paths, wc, qg, sc = _build_qa_inputs(tmp_path)
+        (paths.data_model / "wacc_components.csv").write_text("", encoding="utf-8")
+
+        report = _run_qa_and_load(paths, wc, qg, sc)
+        check = _get_check(report, "wacc_components")
+        assert check is not None
+        assert check["status"] == "warn"
+
+    def test_empty_backtest_summary_warns_instead_of_crashing(self, tmp_path: Path):
+        paths, wc, qg, sc = _build_qa_inputs(tmp_path)
+        (paths.data_model / "backtest_summary.csv").write_text("", encoding="utf-8")
+
+        report = _run_qa_and_load(paths, wc, qg, sc)
+        check = _get_check(report, "backtest_minimum_coverage")
         assert check is not None
         assert check["status"] == "warn"

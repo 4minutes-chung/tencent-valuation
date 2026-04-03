@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from tencent_valuation_v3.backtest import _classify_regime
+from tencent_valuation_v4.backtest import _classify_regime
 
 
 def _make_series(values: list[float], base_date: pd.Timestamp) -> pd.Series:

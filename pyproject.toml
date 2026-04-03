@@ -21,7 +21,7 @@ dependencies = [
 dev = ["pytest>=8.0"]
 
 [project.scripts]
-tencent-valuation-v4 = "tencent_valuation_v3.cli:main"
+tencent-valuation-v4 = "tencent_valuation_v4.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -1,4 +1,4 @@
-"""Phase 7D: Full integration test for V3 pipeline invariants.
+"""Phase 7D: Full integration test for V4 pipeline invariants.
 
 Uses synthetic source mode to avoid network calls.
 Verifies key cross-method invariants without asserting specific values.
@@ -32,8 +32,8 @@ def _float(d: dict, key: str) -> float:
 def pipeline_output(tmp_path_factory: pytest.TempPathFactory):
     """Run the full pipeline once with synthetic data and return the output dict."""
     import shutil
-    from tencent_valuation_v3.paths import build_paths
-    from tencent_valuation_v3.pipeline import run_all
+    from tencent_valuation_v4.paths import build_paths
+    from tencent_valuation_v4.pipeline import run_all
 
     project_root = tmp_path_factory.mktemp("integration")
 

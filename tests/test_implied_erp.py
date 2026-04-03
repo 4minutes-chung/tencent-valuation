@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from tencent_valuation_v3.wacc import _resolve_erp
+from tencent_valuation_v4.wacc import _resolve_erp
 
 
 def _make_monthly(mkt_excess_values: list[float], rf_values: list[float]) -> pd.DataFrame:

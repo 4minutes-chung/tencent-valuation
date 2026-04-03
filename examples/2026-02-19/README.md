@@ -28,5 +28,4 @@ tencent-valuation-v4 run-all --asof 2026-02-19 --source-mode live --refresh
 
 ## Notes
 
-- Internal package/module names still include `tencent_valuation_v3` for compatibility.
 - The operational command surface for current main is `tencent-valuation-v4`.

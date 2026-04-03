@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from tencent_valuation_v3.monte_carlo import MonteCarloArtifacts, run_monte_carlo
+from tencent_valuation_v4.monte_carlo import MonteCarloArtifacts, run_monte_carlo
 
 
 WACC_COMPONENTS = {
@@ -79,7 +79,7 @@ def mc_paths(tmp_path: Path) -> Path:
 
 
 def _get_paths(tmp_path: Path):
-    from tencent_valuation_v3.paths import build_paths
+    from tencent_valuation_v4.paths import build_paths
     paths = build_paths(tmp_path)
     paths.ensure()
     return paths

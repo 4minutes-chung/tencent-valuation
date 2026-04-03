@@ -13,7 +13,7 @@ import warnings
 from unittest.mock import patch
 
 
-import tencent_valuation_v3.overrides as overrides_module
+import tencent_valuation_v4.overrides as overrides_module
 
 
 def _run_fx_fallback_path(wacc_config: dict) -> list[warnings.WarningMessage]:
@@ -49,13 +49,13 @@ class TestFxFallbackWarning(unittest.TestCase):
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             with patch(
-                "tencent_valuation_v3.overrides._fetch_cny_hkd",
+                "tencent_valuation_v4.overrides._fetch_cny_hkd",
                 side_effect=ConnectionError("timeout"),
             ), patch(
-                "tencent_valuation_v3.overrides._fetch_spot_price_hkd",
+                "tencent_valuation_v4.overrides._fetch_spot_price_hkd",
                 side_effect=ConnectionError("timeout"),
             ), patch(
-                "tencent_valuation_v3.overrides._ensure_release_files",
+                "tencent_valuation_v4.overrides._ensure_release_files",
                 side_effect=Exception("skip build_overrides internals"),
             ):
                 try:

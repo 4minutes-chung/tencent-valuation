@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tencent_valuation_v3.wacc import _resolve_rd, calc_rd
+from tencent_valuation_v4.wacc import _resolve_rd, calc_rd
 
 
 class TestResolveRd(unittest.TestCase):
@@ -72,7 +72,7 @@ class TestResolveRd(unittest.TestCase):
 
     def test_rd_stored_in_wacc_components_synthetic(self) -> None:
         """Run pipeline with synthetic_spread config and verify rd column in wacc_components."""
-        from tencent_valuation_v3.pipeline import run_all
+        from tencent_valuation_v4.pipeline import run_all
 
         tmp_root = Path(tempfile.mkdtemp())
         try:

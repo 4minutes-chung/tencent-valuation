@@ -18,6 +18,12 @@ tencent-valuation-v4 run-all --asof YYYY-MM-DD --source-mode live --refresh
 python scripts/generate_v4_visuals.py --asof YYYY-MM-DD
 ```
 
+Single command (recommended):
+
+```bash
+scripts/run_model.sh YYYY-MM-DD synthetic
+```
+
 ## Current Snapshot (Active)
 
 - As-of: `2026-04-02`
@@ -40,7 +46,7 @@ Historical notes, audits, previous snapshots, and working logs:
 
 ## Repo Structure
 
-- `src/tencent_valuation_v3/` code + CLI
+- `src/tencent_valuation_v4/` canonical code + CLI
 - `config/` model configuration
 - `data/raw/<asof>/` raw snapshots + manifests
 - `data/processed/` processed inputs
