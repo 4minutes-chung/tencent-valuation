@@ -238,6 +238,25 @@ def _extract_latest_segment_values(txt_path: Path) -> tuple[dict[str, float], st
     return output, f"{txt_path.name}:lines{','.join(str(x) for x in hint_lines)}"
 
 
+def _extract_latest_equity_attributable_rmb_bn(txt_path: Path) -> tuple[float, str]:
+    text = txt_path.read_text(encoding="utf-8", errors="ignore")
+    match = re.search(
+        (
+            r"Equity attributable to equity holders of the Company\s+.*?\s+"
+            r"Retained earnings\s+[\d,]+\s+[\d,]+\s+([\d,]+)\s+[\d,]+"
+        ),
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not match:
+        raise OverrideBuildError("Could not parse equity attributable to holders from latest filing")
+
+    equity_rmb_mn = float(match.group(1).replace(",", ""))
+    equity_rmb_bn = equity_rmb_mn / 1000.0
+    hint = f"{txt_path.name}:equity_attributable_to_holders_table"
+    return equity_rmb_bn, hint
+
+
 def _tencent_symbol_for_ticker(ticker: str) -> str:
     upper = ticker.upper()
     if upper == "HSI":
@@ -679,6 +698,10 @@ def build_overrides(
     latest_net_cash_rmb_bn = float(latest4.iloc[-1]["net_cash_rmb_bn"])
     latest_shares_out_bn = float(latest4.iloc[-1]["shares_out_bn"])
 
+    latest_spec = _RELEASE_SPECS[-1]
+    latest_release = release_files[latest_spec["title"]]
+    latest_book_value_rmb_bn, book_value_hint = _extract_latest_equity_attributable_rmb_bn(latest_release)
+
     if ttm_revenue_rmb_bn <= 0:
         raise OverrideBuildError("TTM revenue must be positive")
 
@@ -724,14 +747,15 @@ def build_overrides(
                 "fx_cny_hkd": fx_cny_hkd,
                 "fx_source": fx_source,
                 "fundamentals_source": "override_csv",
+                "book_value_hkd_bn": latest_book_value_rmb_bn * fx_cny_hkd,
+                "book_value_source_doc": latest_spec["title"],
+                "book_value_source_page_hint": book_value_hint,
             }
         ]
     )
     tencent_financials_path = paths.data_raw / asof / "tencent_financials.csv"
     tencent_financials.to_csv(tencent_financials_path, index=False)
 
-    latest_spec = _RELEASE_SPECS[-1]
-    latest_release = release_files[latest_spec["title"]]
     segment_rmb, seg_hint = _extract_latest_segment_values(latest_release)
     total_rmb = sum(segment_rmb.values())
     segment_rows = []

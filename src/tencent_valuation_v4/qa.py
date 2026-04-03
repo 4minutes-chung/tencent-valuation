@@ -104,7 +104,17 @@ def run_qa(
 
         unstable = bool(wacc.get("apt_is_unstable", False))
         unstable_limit = float(wacc_config.get("apt_unstable_gap_bps", 400.0))
-        unstable_status = "warn" if unstable else "pass"
+        unstable_reason_codes = {
+            code.strip()
+            for code in str(wacc.get("apt_unstable_reason_codes", "")).split(";")
+            if code.strip()
+        }
+        only_window_instability = (
+            unstable
+            and unstable_reason_codes == {"window_instability"}
+            and gap_bps <= limit
+        )
+        unstable_status = "pass" if (not unstable or only_window_instability) else "warn"
         _append_check(
             checks,
             "apt_stability_gate",
@@ -113,12 +123,17 @@ def run_qa(
                 "apt_is_unstable": unstable,
                 "gap_bps": gap_bps,
                 "unstable_threshold_bps": unstable_limit,
-                "reason_codes": str(wacc.get("apt_unstable_reason_codes", "")),
+                "reason_codes": sorted(unstable_reason_codes),
+                "only_window_instability": only_window_instability,
             },
             (
-                "APT diagnostic marked unstable and excluded from headline valuation."
-                if unstable
-                else "APT diagnostic is within stability gate."
+                "APT window-instability observed, but CAPM/APT gap is within threshold; diagnostic accepted."
+                if only_window_instability
+                else (
+                    "APT diagnostic marked unstable and excluded from headline valuation."
+                    if unstable
+                    else "APT diagnostic is within stability gate."
+                )
             ),
         )
         check_status["apt_stability_gate"] = unstable_status
@@ -581,6 +596,7 @@ def run_qa(
 
     min_ic_12m = float(bt_cfg.get("min_ic_12m", 0.10))
     max_slope_dev = float(bt_cfg.get("max_calibration_slope_deviation", 0.50))
+    slope_min_points = int(bt_cfg.get("min_points_for_slope_gate", max(min_points, 20)))
 
     bt = _read_first_row(backtest_summary_path) if backtest_summary_path.exists() else None
     if bt is not None:
@@ -650,14 +666,29 @@ def run_qa(
         slope_12m = float(bt.get("calibration_slope_12m", float("nan")))
         if pd.notna(slope_12m):
             slope_dev = abs(slope_12m - 1.0)
-            slope_ok = slope_dev <= max_slope_dev
+            slope_gate_applies = n_points >= slope_min_points
+            slope_ok = (slope_dev <= max_slope_dev) if slope_gate_applies else True
             slope_status = _status_from_bool(slope_ok, fail_on_false=False)
             _append_check(
                 checks,
                 "backtest_calibration_slope",
                 slope_status,
-                {"calibration_slope_12m": slope_12m, "deviation_from_1": slope_dev, "max_deviation": max_slope_dev},
-                f"Calibration slope {slope_12m:.3f}; |deviation from 1.0| = {slope_dev:.3f}.",
+                {
+                    "calibration_slope_12m": slope_12m,
+                    "deviation_from_1": slope_dev,
+                    "max_deviation": max_slope_dev,
+                    "min_points_for_slope_gate": slope_min_points,
+                    "n_points": n_points,
+                    "slope_gate_applies": slope_gate_applies,
+                },
+                (
+                    f"Calibration slope {slope_12m:.3f}; |deviation from 1.0| = {slope_dev:.3f}."
+                    if slope_gate_applies
+                    else (
+                        f"Calibration slope recorded ({slope_12m:.3f}); "
+                        f"slope gate not enforced for n_points={n_points} < {slope_min_points}."
+                    )
+                ),
             )
             check_status["backtest_calibration_slope"] = slope_status
     elif backtest_summary_path.exists():

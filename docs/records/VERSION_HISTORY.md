@@ -1,81 +1,60 @@
 # Version History (Git Lineage)
 
-Last updated: April 1, 2026
+Last updated: 2026-04-03
 
-This repository has a single active branch (`main`) with preserved commit history for v1 through v4 milestones.
+This repository has one active development line: `main`.
+Current package identity is V4 (`tencent-valuation-v4`) with source under `src/tencent_valuation_v4/`.
 
 ## 1) Timeline Summary
 
 | Era | Commit | Date | Headline |
 |---|---|---|---|
-| V1 | `f2cf350` | 2026-02-17 | Baseline Tencent valuation framework |
-| V2 | `9fa837f` | 2026-02-19 | Added data snapshots and valuation reports |
-| V3 | `0e0cc09` | 2026-03-19 | Added expanded v3 package/output set |
-| V4 import milestone | `1260378` | 2026-03-26 | Imported Windows V4 files into GitHub repo |
-| V4 cleanup (current main baseline) | `426f8fc` | 2026-03-29 | Cleaned repo to v4-only layout |
+| V1 baseline | `f2cf350` | 2026-02-17 | Initial Tencent valuation framework |
+| V2 expansion | `9fa837f` | 2026-02-19 | Added data snapshots and valuation artifacts |
+| V3 package era | `0e0cc09` | 2026-03-19 | Expanded valuation stack and QA contracts |
+| V4 merge milestone | `4d64af3` | 2026-03-24 | V4 branch merged into `main` |
+| V4-only cleanup | `426f8fc` | 2026-03-29 | Removed legacy duplicate trees, kept single active layout |
+| V4 namespace hard-cut (current baseline) | `284ac6b` | 2026-04-03 | Switched canonical module path to `src/tencent_valuation_v4/` |
 
-## 2) What Changed by Era
-
-### V1 (`f2cf350`)
-- Original package path: `src/tencent_valuation/`
-- Core capabilities: fetch, factors, WACC, DCF, QA, report, backtest.
-- Minimal test set (`tests/test_factors.py`, `tests/test_wacc_math.py`, `tests/test_integration_pipeline.py`).
-
-### V2 (`9fa837f`)
-- Added committed output snapshots in `data/` and `reports/`.
-- Added deep-research report markdown artifacts.
-- Expanded operational reproducibility through stored artifacts.
-
-### V3 (`0e0cc09`)
-- Added broader method stack and output contracts (APV, residual income, comps, T-value, reverse DCF, ensemble, regime backtest outputs).
-- Introduced large `v3/` subtree with a standalone structure in that commit era.
-
-### V4 import (`1260378`)
-- Added/updated modernized `src/tencent_valuation_v3/` implementation.
-- Added `config/sources.yaml`, `config/method_weights.yaml`, and `config/backtest_vintages/*`.
-- Expanded tests for new method set and QA behaviors.
-- Added V4-era formal reporting artifacts (kept in git history).
-
-### V4 cleanup (`426f8fc`, current `main`)
-- Removed obsolete legacy package path `src/tencent_valuation/`.
-- Removed duplicated historical `v3/` subtree from repo root.
-- Kept active implementation in `src/tencent_valuation_v3/` but switched package identity to V4 (`tencent-valuation-v4`, version `0.4.0`).
-- Updated docs/config references for v4-only operation.
-
-## 3) Current Main Characteristics
+## 2) Current Main Characteristics
 
 - Branch: `main`
-- Total commits in current history: `11`
-- Active package entrypoint: `tencent_valuation_v3.cli:main`
-- CLI executable: `tencent-valuation-v4`
-- CI branch target: `main` (push and PR)
+- Active package name: `tencent-valuation-v4`
+- Active module path: `src/tencent_valuation_v4/`
+- CLI entrypoint: `tencent_valuation_v4.cli:main`
+- Build metadata file: `pyproject.toml`
 
-## 4) How to Inspect Historical Versions
+## 3) Architecture Clarification
 
-Read historical README files without checkout:
+- `pyproject.toml` is not optional clutter; it defines build backend, dependencies, and CLI script mapping.
+- `src/` is the standard Python source root for package discovery (`setuptools` with `package-dir = {"": "src"}`).
+- The repository is operationally V4; references to older versions are historical records only.
+
+## 4) Historical Inspection Commands
+
+Inspect historical README content:
 
 ```bash
 git show f2cf350:README.md
 git show 9fa837f:README.md
 git show 0e0cc09:README.md
-git show 1260378:README.md
 git show 426f8fc:README.md
+git show 284ac6b:README.md
 ```
 
-List top-level tree at a specific version:
-
-```bash
-git ls-tree --name-only <commit>
-```
-
-Show file-level changes introduced by a milestone commit:
+Inspect files changed by a specific milestone:
 
 ```bash
 git diff-tree --no-commit-id --name-status -r <commit>
 ```
 
-## 5) Practical Guidance
+List top-level tree at a historical commit:
 
-1. Treat `main` as the only operational line for new development.
-2. Use historical commits for forensic comparisons and reproducibility, not day-to-day execution.
-3. Keep documentation aligned with the V4 CLI name even when internal module names retain legacy `v3` identifiers.
+```bash
+git ls-tree --name-only <commit>
+```
+
+## 5) Working Rule
+
+Treat `main` + V4 CLI as the only production path.
+Historical commits are for audit/reproducibility, not for day-to-day model runs.

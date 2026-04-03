@@ -1,0 +1,11 @@
+{
+  "asof": "2026-04-03",
+  "files": {
+    "weekly_returns": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/weekly_returns.csv",
+    "monthly_factors": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/monthly_factors.csv",
+    "monthly_asset_returns": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/monthly_asset_returns.csv",
+    "market_inputs": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/market_inputs.csv",
+    "tencent_financials": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/tencent_financials.csv",
+    "segment_revenue": "/Users/stevenchung/Desktop/P12B_File/Tencent_Model/data/processed/segment_revenue.csv"
+  }
+}

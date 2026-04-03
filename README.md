@@ -26,11 +26,12 @@ scripts/run_model.sh YYYY-MM-DD synthetic
 
 ## Current Snapshot (Active)
 
-- As-of: `2026-04-02`
+- As-of: `2026-04-03`
 - Spot price: `489.2` HKD
 - WACC: `10.52%`
 - DCF base: `354.36` HKD/share
-- Ensemble base: `361.08` HKD/share
+- Ensemble base: `385.89` HKD/share
+- QA summary: `27 checks`, `0 warnings`, `0 failures`, investor-grade `YES`
 
 ## Documentation (Primary)
 
@@ -54,3 +55,10 @@ Historical notes, audits, previous snapshots, and working logs:
 - `reports/` run reports
 - `docs/figures/<asof>/` chart pack
 - `tests/` tests
+
+## Architecture Sanity Notes
+
+- `pyproject.toml` is required: it defines package metadata, dependencies, and CLI entrypoint (`tencent-valuation-v4`).
+- `src/` is the standard Python source layout used by `setuptools`.
+- Active code is V4 only: `src/tencent_valuation_v4/`.
+- There is no active `src/tencent_valuation_v3/` package in this repository.

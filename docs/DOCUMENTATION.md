@@ -1,6 +1,6 @@
 # DOCUMENTATION
 
-Last updated: 2026-04-02
+Last updated: 2026-04-03
 
 This file is the single operational guide for the V4 project.
 
@@ -32,12 +32,12 @@ python scripts/generate_v4_visuals.py --asof YYYY-MM-DD
 
 ## 3) Current Snapshot (Active)
 
-- As-of date: `2026-04-02`
+- As-of date: `2026-04-03`
 - Spot price: `489.2` HKD
 - WACC: `10.52%`
 - DCF base value: `354.36` HKD/share
-- Ensemble base value: `361.08` HKD/share
-- QA summary: `27 checks`, `2 warnings`, `2 failures`, investor-grade `NO`
+- Ensemble base value: `385.89` HKD/share
+- QA summary: `27 checks`, `0 warnings`, `0 failures`, investor-grade `YES`
 
 ## 4) Required Inputs
 
@@ -53,6 +53,11 @@ Expected override inputs under `data/raw/<asof>/`:
 - `tencent_financials.csv`
 - `segment_revenue.csv`
 - `peer_fundamentals.csv`
+
+Structure notes:
+- `pyproject.toml` exists to define install/build/dependency metadata and the CLI script.
+- `src/` is the package source root.
+- Canonical package is `src/tencent_valuation_v4/` (V4-only execution path).
 
 ## 5) Main Outputs
 

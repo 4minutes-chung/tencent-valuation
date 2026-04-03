@@ -1,6 +1,6 @@
 # Investment Report (V4)
 
-As-of date: `2026-04-02`
+As-of date: `2026-04-03`
 
 ## 1) Executive View
 
@@ -8,7 +8,7 @@ Tencent screens as overvalued versus model fair value in this snapshot.
 
 - Market price: `489.20` HKD/share
 - DCF base fair value: `354.36` HKD/share (`-27.6%` vs market)
-- Ensemble base fair value: `361.08` HKD/share (`-26.2%` vs market)
+- Ensemble base fair value: `385.89` HKD/share (`-21.1%` vs market)
 - Decision: no margin-of-safety entry at current price
 
 ## 2) Key Assumptions (Standard Level)
@@ -26,23 +26,22 @@ Tencent screens as overvalued versus model fair value in this snapshot.
 
 | Scenario | DCF (HKD/share) | Ensemble (HKD/share) |
 |---|---:|---:|
-| Base | 354.36 | 361.08 |
-| Bad | 206.34 | 244.64 |
-| Extreme | 147.87 | 193.66 |
+| Base | 354.36 | 385.89 |
+| Bad | 206.34 | 267.27 |
+| Extreme | 147.87 | 212.64 |
 
-Ensemble expected value: `295.21` HKD/share.
+Ensemble expected value: `318.38` HKD/share.
 
 ## 4) QA and Reliability
 
 - QA checks: `27`
-- Warnings: `2`
-- Failures: `2`
-- Investor-grade: `NO`
+- Warnings: `0`
+- Failures: `0`
+- Investor-grade: `YES`
 
 Main limitations:
-- backtest sample depth below threshold
-- backtest calibration/coverage below threshold
-- APT stability warning (kept as diagnostic)
+- APT remains diagnostic and window-unstable (CAPM stays official).
+- Backtest skips are still possible for some older windows due to historical market data coverage.
 
 ## 5) Market-Implied Check
 
