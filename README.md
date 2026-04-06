@@ -2,7 +2,8 @@
 
 ![CI](https://github.com/4minutes-chung/tencent-valuation/actions/workflows/ci.yml/badge.svg)
 
-9-method equity valuation of Tencent Holdings (`0700.HK`). Built to demonstrate CAPM, DCF, and ensemble valuation mechanics — reproducible from raw data to charts in a single command.
+9-method equity valuation of Tencent Holdings (`0700.HK`). 
+Built to demonstrate CAPM, DCF, and ensemble valuation mechanics, reproducible from raw data to charts in a single command.
 
 ---
 
@@ -10,7 +11,7 @@
 
 | Method | Fair Value (HKD) | vs. Spot |
 |---|---|---|
-| DCF (FCFF, 7-year) | 391.64 | −20% |
+| **DCF (FCFF, 7-year)** | **391.64** | **−20%** |
 | APV | 373.26 | −24% |
 | EVA | 379.26 | −22% |
 | Monte Carlo (10k paths) | 399.33 | −18% |
@@ -20,7 +21,7 @@
 | Relative (peer comps) | 644.89 | +32% |
 | **Ensemble (QA-weighted)** | **407.14** | **−17%** |
 
-**Model conclusion:** DCF-based methods cluster at 370–400 HKD. Ensemble fair value of 407 HKD is ~17% below spot — no margin of safety under base assumptions.
+**Model conclusion:** DCF-based methods cluster at 370–400 HKD. Ensemble fair value of 407 HKD is ~17% below spot, with no margin of safety under base assumptions.
 
 **Key assumptions (base scenario)**
 
@@ -40,6 +41,10 @@
 
 ## Charts
 
+**DCF sensitivity: WACC vs. terminal growth rate**
+
+![Sensitivity WACC-g](docs/figures/2026-04-03/07_sensitivity_wacc_g.png)
+
 **DCF scenarios vs. market price**
 
 ![DCF vs Market](docs/figures/2026-04-03/01_dcf_vs_market.png)
@@ -47,10 +52,6 @@
 **All 9 methods — base scenario cross-section**
 
 ![Method Cross-Section](docs/figures/2026-04-03/03_method_cross_section.png)
-
-**DCF sensitivity: WACC vs. terminal growth rate**
-
-![Sensitivity WACC-g](docs/figures/2026-04-03/07_sensitivity_wacc_g.png)
 
 ---
 
@@ -103,4 +104,4 @@ data/raw/<asof>/                 ← raw snapshots (not committed)
 ## QA
 
 27 checks across WACC inputs, DCF mechanics, ensemble weights, and output sanity.
-Last run: `0 warnings / 0 failures / investor_grade = True`
+Last run: `0 warnings / 0 failures`
