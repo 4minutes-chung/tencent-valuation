@@ -19,8 +19,8 @@ jobs:
           python -m pip install pytest
       - name: Run tests
         run: |
-          python -m unittest discover -s tests -v
-      - name: Prepare QA override pack
+          PYTHONPATH=src python -m pytest -q
+      - name: Prepare QA fixture data
         run: |
           mkdir -p data/raw/2026-02-18
           cat > data/raw/2026-02-18/tencent_financials.csv << 'EOF'
@@ -35,34 +35,28 @@ jobs:
           2026-02-18,Others,25.0,700.0,override_csv
           EOF
           cat > data/raw/2026-02-18/peer_fundamentals.csv << 'EOF'
-          ticker,gross_debt_hkd_bn,interest_expense_hkd_bn_3y_avg,effective_tax_rate_3y_avg,shares_out_bn,source_doc,source_date
-          9988.HK,170.0,7.0,0.18,22.97,ci_fixture,2026-02-18
-          3690.HK,120.0,6.0,0.19,6.43,ci_fixture,2026-02-18
-          9999.HK,90.0,4.0,0.21,2.88,ci_fixture,2026-02-18
-          9618.HK,110.0,5.0,0.20,4.55,ci_fixture,2026-02-18
-          9888.HK,95.0,4.3,0.19,5.13,ci_fixture,2026-02-18
+          ticker,gross_debt_hkd_bn,interest_expense_hkd_bn_3y_avg,effective_tax_rate_3y_avg,shares_out_bn,source_doc,source_date,net_income_hkd_bn,book_value_hkd_bn,ebit_hkd_bn,fcf_hkd_bn,financial_currency,valuation_data_source,net_income_source,book_value_source,ebit_source,fcf_source
+          9988.HK,170.0,7.0,0.18,22.97,ci_fixture,2026-02-18,80.0,900.0,110.0,50.0,CNY,ci_fixture,ci_fixture,ci_fixture,ci_fixture,ci_fixture
+          3690.HK,120.0,6.0,0.19,6.43,ci_fixture,2026-02-18,30.0,200.0,40.0,20.0,CNY,ci_fixture,ci_fixture,ci_fixture,ci_fixture,ci_fixture
+          9999.HK,90.0,4.0,0.21,2.88,ci_fixture,2026-02-18,35.0,160.0,38.0,45.0,CNY,ci_fixture,ci_fixture,ci_fixture,ci_fixture,ci_fixture
+          9618.HK,110.0,5.0,0.20,4.55,ci_fixture,2026-02-18,28.0,220.0,38.0,10.0,CNY,ci_fixture,ci_fixture,ci_fixture,ci_fixture,ci_fixture
+          9888.HK,95.0,4.3,0.19,5.13,ci_fixture,2026-02-18,5.0,260.0,9.0,-15.0,CNY,ci_fixture,ci_fixture,ci_fixture,ci_fixture,ci_fixture
           EOF
-      - name: QA gate (no fail checks)
+      - name: QA gate (no blocking failures)
         run: |
-          python -m tencent_valuation_v3 run-all --asof 2026-02-18 --source-mode synthetic --refresh > /tmp/run-all.json
-          python -m tencent_valuation_v3 qa --asof 2026-02-18 --source-mode synthetic > /tmp/qa.json
+          python -m tencent_valuation_v4 run-all --asof 2026-02-18 --source-mode synthetic --refresh > /tmp/run-all.json
           python - << 'PY'
           import json
           from pathlib import Path
           qa_path = Path("reports/qa_2026-02-18.json")
           qa = json.loads(qa_path.read_text())
-          non_blocking_fail_checks = {"backtest_quality_flag"}
-          blocking_failures = [
-              check
-              for check in qa.get("checks", [])
-              if check.get("status") == "fail" and check.get("check") not in non_blocking_fail_checks
+          non_blocking = {"backtest_quality_flag"}
+          blocking = [
+              c for c in qa.get("checks", [])
+              if c.get("status") == "fail" and c.get("check") not in non_blocking
           ]
-          if blocking_failures:
-              failing_names = ", ".join(sorted({str(c.get("check")) for c in blocking_failures}))
-              raise SystemExit(f"Blocking QA failures: {failing_names}; failing CI")
-          total_failures = int(qa.get("summary", {}).get("failures", 0))
-          print(
-              f"QA gate passed. warnings={qa['summary']['warnings']}, "
-              f"failures={total_failures} (non-blocking: backtest_quality_flag)"
-          )
+          if blocking:
+              names = ", ".join(sorted({str(c.get("check")) for c in blocking}))
+              raise SystemExit(f"Blocking QA failures: {names}")
+          print(f"QA gate passed. warnings={qa['summary']['warnings']}, failures={qa['summary']['failures']}")
           PY
