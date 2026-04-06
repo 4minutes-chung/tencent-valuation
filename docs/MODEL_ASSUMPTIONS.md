@@ -52,7 +52,7 @@ It is intended to be the complete non-code assumption reference for this snapsho
 | Cost of debt (`Rd`) | `5.63%` |
 | Target D/E | `0.179` |
 | Tax rate | `20.0%` |
-| Official WACC | `10.52%` |
+| Official WACC | `10.48%` |
 
 ### 2.3 APT guardrail and stability assumptions
 
@@ -78,7 +78,7 @@ Interpretation rule: APT is diagnostic-only when instability gates fail.
 ### 3.2 Scenario paths (configured and used)
 
 #### Base
-- `terminal_g = 2.5%`
+- `terminal_g = 3.5%`
 - `revenue_growth = [8.0%, 8.0%, 7.5%, 7.0%, 6.5%, 6.0%, 5.5%]`
 - `ebit_margin = [36.0%, 36.5%, 36.8%, 37.0%, 37.2%, 37.3%, 37.4%]`
 - `capex_pct_revenue = [9.0%, 9.0%, 8.8%, 8.6%, 8.5%, 8.4%, 8.3%]`
@@ -165,13 +165,13 @@ Penalty factors configured:
 
 ## 6) Embedded Valuation Conclusions
 
-- DCF fair value (`base`): `354.36` HKD/share (`-27.56%` vs market `489.2`)
-- Ensemble fair value (`base`): `385.89` HKD/share (`-21.11%` vs market `489.2`)
-- Ensemble expected value: `318.38` HKD/share
+- DCF fair value (`base`): `391.64` HKD/share (`-19.9%` vs market `489.2`)
+- Ensemble fair value (`base`): `407.14` HKD/share (`-16.8%` vs market `489.2`)
+- Ensemble expected value: `330.96` HKD/share
 - Reverse DCF at market:
-  - implied terminal growth: `5.043%`
-  - implied margin shift: `+950.5 bps`
-  - implied growth shift: `+510.6 bps`
+  - implied terminal growth: `5.00%`
+  - implied margin shift: `+585.3 bps`
+  - implied growth shift: `+323.4 bps`
 
 ## 7) Reproducibility
 

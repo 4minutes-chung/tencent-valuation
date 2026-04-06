@@ -7,8 +7,8 @@ As-of date: `2026-04-03`
 Tencent screens as overvalued versus model fair value in this snapshot.
 
 - Market price: `489.20` HKD/share
-- DCF base fair value: `354.36` HKD/share (`-27.6%` vs market)
-- Ensemble base fair value: `385.89` HKD/share (`-21.1%` vs market)
+- DCF base fair value: `391.64` HKD/share (`-19.9%` vs market)
+- Ensemble base fair value: `407.14` HKD/share (`-16.8%` vs market)
 - Decision: no margin-of-safety entry at current price
 
 ## 2) Key Assumptions (Standard Level)
@@ -16,8 +16,8 @@ Tencent screens as overvalued versus model fair value in this snapshot.
 - Forecast horizon: 7 years
 - Discounting: mid-year
 - Scenario set: base / bad / extreme
-- Terminal growth: `2.5% / 1.0% / 0.0%`
-- WACC: `10.52%`
+- Terminal growth: `3.5% / 1.0% / 0.0%`
+- WACC: `10.48%`
 - CAPM cost of equity: `11.59%`
 - Cost of debt: `5.63%`
 - Tax rate: `20%`
@@ -26,11 +26,11 @@ Tencent screens as overvalued versus model fair value in this snapshot.
 
 | Scenario | DCF (HKD/share) | Ensemble (HKD/share) |
 |---|---:|---:|
-| Base | 354.36 | 385.89 |
-| Bad | 206.34 | 267.27 |
-| Extreme | 147.87 | 212.64 |
+| Base | 391.64 | 407.14 |
+| Bad | 207.01 | 271.19 |
+| Extreme | 148.26 | 216.52 |
 
-Ensemble expected value: `318.38` HKD/share.
+Ensemble expected value: `330.96` HKD/share.
 
 ## 4) QA and Reliability
 
@@ -46,9 +46,9 @@ Main limitations:
 ## 5) Market-Implied Check
 
 At current market price, reverse DCF implies assumptions stronger than model base:
-- implied terminal growth: `5.043%`
-- implied margin shift: `+950.5 bps`
-- implied growth shift: `+510.6 bps`
+- implied terminal growth: `5.00%`
+- implied margin shift: `+585.3 bps`
+- implied growth shift: `+323.4 bps`
 
 ## 6) Bottom Line
 
