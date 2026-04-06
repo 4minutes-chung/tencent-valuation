@@ -19,16 +19,16 @@
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 355.83 | -27.26% |
+| base | 391.64 | -19.94% |
 | bad | 207.01 | -57.68% |
 | extreme | 148.26 | -69.69% |
 
 ## Ensemble Cross-Check
 
-- bad: ensemble `267.37` (range `166.70` to `548.16`).
-- base: ensemble `386.18` (range `260.50` to `644.89`).
-- extreme: ensemble `212.71` (range `124.05` to `451.42`).
-- expected: ensemble `318.58` (range `212.71` to `386.18`).
+- bad: ensemble `271.19` (range `166.70` to `548.16`).
+- base: ensemble `407.14` (range `268.35` to `644.89`).
+- extreme: ensemble `216.52` (range `124.05` to `451.42`).
+- expected: ensemble `330.96` (range `216.52` to `407.14`).
 
 ## Risks
 

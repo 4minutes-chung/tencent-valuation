@@ -10,17 +10,17 @@
 
 | Method | Fair Value (HKD) | vs. Spot |
 |---|---|---|
-| DCF (FCFF, 7-year) | 355.83 | −27% |
-| APV | 346.39 | −29% |
-| EVA | 367.71 | −25% |
-| Monte Carlo (10k paths) | 362.15 | −26% |
-| Real Options | 366.83 | −25% |
-| Residual Income | 260.50 | −47% |
+| DCF (FCFF, 7-year) | 391.64 | −20% |
+| APV | 373.26 | −24% |
+| EVA | 379.26 | −22% |
+| Monte Carlo (10k paths) | 399.33 | −18% |
+| Real Options | 402.64 | −18% |
+| Residual Income | 268.35 | −45% |
 | SOTP | 445.89 | −9% |
 | Relative (peer comps) | 644.89 | +32% |
-| **Ensemble (QA-weighted)** | **386.18** | **−21%** |
+| **Ensemble (QA-weighted)** | **407.14** | **−17%** |
 
-**Model conclusion:** DCF-based methods cluster at 350–370 HKD. Ensemble fair value of 386 HKD is ~21% below spot — no margin of safety under base assumptions.
+**Model conclusion:** DCF-based methods cluster at 370–400 HKD. Ensemble fair value of 407 HKD is ~17% below spot — no margin of safety under base assumptions. Terminal growth rate: 3.5% (base), 1.0% (bad), 0.0% (extreme).
 
 WACC: `10.48%` | Beta (Vasicek): `1.36` | rf (UST 10Y): `4.13%` | ERP: `4.63%`
 

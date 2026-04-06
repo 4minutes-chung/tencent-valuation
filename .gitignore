@@ -26,3 +26,5 @@ reports/qa_*.json
 
 # Internal working logs (not for portfolio)
 docs/records/
+
+CLAUDE.md

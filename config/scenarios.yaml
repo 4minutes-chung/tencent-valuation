@@ -2,7 +2,7 @@ forecast_years: 7
 mid_year_discounting: true
 scenarios:
   base:
-    terminal_g: 0.025
+    terminal_g: 0.035
     revenue_growth: [0.08, 0.08, 0.075, 0.07, 0.065, 0.06, 0.055]
     ebit_margin: [0.36, 0.365, 0.368, 0.37, 0.372, 0.373, 0.374]
     capex_pct_revenue: [0.09, 0.09, 0.088, 0.086, 0.085, 0.084, 0.083]
