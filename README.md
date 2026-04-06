@@ -20,9 +20,21 @@
 | Relative (peer comps) | 644.89 | +32% |
 | **Ensemble (QA-weighted)** | **407.14** | **−17%** |
 
-**Model conclusion:** DCF-based methods cluster at 370–400 HKD. Ensemble fair value of 407 HKD is ~17% below spot — no margin of safety under base assumptions. Terminal growth rate: 3.5% (base), 1.0% (bad), 0.0% (extreme).
+**Model conclusion:** DCF-based methods cluster at 370–400 HKD. Ensemble fair value of 407 HKD is ~17% below spot — no margin of safety under base assumptions.
 
-WACC: `10.48%` | Beta (Vasicek): `1.36` | rf (UST 10Y): `4.13%` | ERP: `4.63%`
+**Key assumptions (base scenario)**
+
+| Parameter | Value |
+|---|---|
+| WACC | 10.48% |
+| Beta (Vasicek-adjusted) | 1.36 |
+| Risk-free rate (UST 10Y) | 4.13% |
+| Equity risk premium | 4.63% |
+| Country risk premium | 1.25% |
+| Terminal growth rate | 3.5% |
+| Revenue growth (Yr 1→7) | 8% → 5.5% |
+| EBIT margin (Yr 1→7) | 36% → 37.4% |
+| Scenario probabilities | Base 50% / Bad 35% / Extreme 15% |
 
 ---
 
