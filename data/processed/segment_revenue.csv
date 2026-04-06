@@ -1,5 +1,0 @@
-period,segment,revenue_hkd_bn,total_revenue_hkd_bn,source_doc,source_page_hint,segment_source
-2025-09-30,VAS,108.916132,219.13775780000003,Tencent Announces 2025 Third Quarter Results,"tencent_announces_2025_third_quarter_results.txt:lines218,219,220,221",override_csv
-2025-09-30,Marketing Services,41.1781604,219.13775780000003,Tencent Announces 2025 Third Quarter Results,"tencent_announces_2025_third_quarter_results.txt:lines218,219,220,221",override_csv
-2025-09-30,FinTech and Business Services,66.0972988,219.13775780000003,Tencent Announces 2025 Third Quarter Results,"tencent_announces_2025_third_quarter_results.txt:lines218,219,220,221",override_csv
-2025-09-30,Others,2.9461666,219.13775780000003,Tencent Announces 2025 Third Quarter Results,"tencent_announces_2025_third_quarter_results.txt:lines218,219,220,221",override_csv

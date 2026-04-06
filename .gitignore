@@ -1,18 +1,27 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
-.DS_Store
-.venv/
-.venv*/
+*.egg-info/
 build/
 dist/
-*.egg-info/
 
-# Generated pipeline artifacts
-data/model/*.csv
-data/model/*.parquet
-data/processed/*.csv
-data/processed/*.parquet
-data/raw/**
+# Environment
+.venv/
+.venv*/
+.env
+
+# OS
+.DS_Store
+
+# Generated pipeline artifacts (do not commit)
+data/model/
+data/processed/
+data/raw/
 reports/tencent_valuation_*.md
+reports/tencent_v4_compact_log_*.md
 reports/qa_*.json
+
+# Internal working logs (not for portfolio)
+docs/records/

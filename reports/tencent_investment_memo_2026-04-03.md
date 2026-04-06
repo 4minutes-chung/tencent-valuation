@@ -8,10 +8,10 @@
 
 ## Key Assumptions
 
-- WACC (official): `10.52%`
-- CAPM cost of equity: `11.59%`
+- WACC (official): `10.48%`
+- CAPM cost of equity: `11.67%`
 - APT diagnostic cost of equity: `12.76%`
-- Target D/E: `0.179`
+- Target D/E: `0.198`
 - Beta stability score: `0.971`
 - Investor-grade QA status: `PASS`
 
@@ -19,16 +19,16 @@
 
 | Scenario | Fair Value (HKD/share) | Margin of Safety |
 |---|---:|---:|
-| base | 354.36 | -27.56% |
-| bad | 206.34 | -57.82% |
-| extreme | 147.87 | -69.77% |
+| base | 355.83 | -27.26% |
+| bad | 207.01 | -57.68% |
+| extreme | 148.26 | -69.69% |
 
 ## Ensemble Cross-Check
 
-- bad: ensemble `267.27` (range `168.26` to `547.60`).
-- base: ensemble `385.89` (range `263.23` to `644.24`).
-- extreme: ensemble `212.64` (range `125.17` to `450.96`).
-- expected: ensemble `318.38` (range `212.64` to `385.89`).
+- bad: ensemble `267.37` (range `166.70` to `548.16`).
+- base: ensemble `386.18` (range `260.50` to `644.89`).
+- extreme: ensemble `212.71` (range `124.05` to `451.42`).
+- expected: ensemble `318.58` (range `212.71` to `386.18`).
 
 ## Risks
 
