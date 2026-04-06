@@ -36,18 +36,9 @@ Active run: `2026-04-03`. Spot price `489.2` HKD. Ensemble base fair value
 | Source | Status |
 |--------|--------|
 | `tencent_financials.csv` | Real — TTM from Tencent quarterly filings, FX from stooq |
-| `peer_fundamentals.csv` | **Synthetic/template** — `source_doc=peer_fundamentals_template` |
+| `peer_fundamentals.csv` | Real — sourced from StockAnalysis HKEX FY2025 (`source_doc=stockanalysis_hkex_FY2025`) |
 | Factor data (CAPM/APT) | Real in `live` mode (FRED + public market data); synthetic in `stub` |
 | UST yield curve | Real (FRED) |
-
-Comps and relative valuation outputs are approximate because peer fundamentals
-are template anchors. Do not claim full live data for the peer side. Document
-this as a known limitation, do not hide it.
-
-If the user wants to fix this: download real peer fundamentals from HKEX filings
-or Bloomberg and replace `data/raw/<asof>/peer_fundamentals.csv`. The required
-columns are: `net_income_hkd_bn`, `book_value_hkd_bn`, `ebit_hkd_bn`,
-`fcf_hkd_bn`.
 
 ---
 
@@ -73,12 +64,11 @@ columns are: `net_income_hkd_bn`, `book_value_hkd_bn`, `ebit_hkd_bn`,
 
 ## Known Limitations (Document, Don't Fix)
 
-1. **Peer comps are proxy anchors** — real peer fundamentals not downloaded
-2. **APT is window-unstable** — CAPM is the official cost of equity; APT is
+1. **APT is window-unstable** — CAPM is the official cost of equity; APT is
    diagnostic only
-3. **Terminal ROIC check is a warning, not a failure** — known gap in QA hardness
-4. **Monte Carlo uses a single correlation coefficient** — simplification
-5. **Silent fallback to synthetic** in `auto` source mode — use `live` or `stub`
+2. **Terminal ROIC check is a warning, not a failure** — known gap in QA hardness
+3. **Monte Carlo uses a single correlation coefficient** — simplification
+4. **Silent fallback to synthetic** in `auto` source mode — use `live` or `stub`
    explicitly
 
 ---

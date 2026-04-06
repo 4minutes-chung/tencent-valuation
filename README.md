@@ -1,5 +1,7 @@
 # Tencent Valuation Pipeline (V4)
 
+![CI](https://github.com/4minutes-chung/tencent-model-full/actions/workflows/ci.yml/badge.svg)
+
 9-method equity valuation of Tencent Holdings (`0700.HK`). Built to demonstrate CAPM, DCF, and ensemble valuation mechanics — reproducible from raw data to charts in a single command.
 
 ---
@@ -96,7 +98,6 @@ Full docs: [`docs/INVESTMENT_REPORT.md`](docs/INVESTMENT_REPORT.md) | [`docs/MOD
 | Peer capital structure | HKEX annual reports (FY2025, StockAnalysis) |
 | Peer P&L multiples | yfinance TTM statements |
 
-**Known limitation:** Relative valuation outputs are approximate — peer comps are anchored to real fundamentals but not Bloomberg-grade.
 
 ---
 
