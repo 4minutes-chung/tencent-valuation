@@ -59,21 +59,6 @@ WACC: `10.48%` | Beta (Vasicek): `1.36` | rf (UST 10Y): `4.13%` | ERP: `4.63%`
 
 ---
 
-## Quick Start
-
-```bash
-python -m pip install -e .
-scripts/run_model.sh 2026-04-03 live
-python scripts/generate_v4_visuals.py --asof 2026-04-03
-```
-
-QA check:
-```bash
-python3 -c "import json; print(json.load(open('reports/qa_2026-04-03.json'))['summary'])"
-```
-
----
-
 ## Repo Structure
 
 ```
