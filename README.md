@@ -77,14 +77,16 @@ python3 -c "import json; print(json.load(open('reports/qa_2026-04-03.json'))['su
 ## Repo Structure
 
 ```
-src/tencent_valuation_v4/   ← pipeline code + CLI
-config/                     ← YAML config (WACC, scenarios, QA gates, method weights)
-data/raw/<asof>/            ← raw snapshots (not committed)
-docs/figures/<asof>/        ← 11 charts per run
-tests/                      ← test suite
+README.md                        ← results + charts (start here)
+docs/INVESTMENT_REPORT.md        ← thesis and decision narrative
+docs/MODEL_ASSUMPTIONS.md        ← full assumptions register
+docs/figures/2026-04-03/         ← 11 charts
+src/tencent_valuation_v4/        ← all pipeline code
+config/                          ← YAML config (WACC, scenarios, weights, QA gates)
+scripts/                         ← run_model.sh, generate_v4_visuals.py
+tests/                           ← test suite
+data/raw/<asof>/                 ← raw snapshots (not committed)
 ```
-
-Full docs: [`docs/INVESTMENT_REPORT.md`](docs/INVESTMENT_REPORT.md) | [`docs/MODEL_ASSUMPTIONS.md`](docs/MODEL_ASSUMPTIONS.md)
 
 ---
 
