@@ -51,8 +51,7 @@ class TestExpectedValueRow:
 
     def test_probabilities_sum_to_one(self):
         from tencent_valuation_v4.config import load_yaml
-        from pathlib import Path
-        config_path = Path("C:/Projects/tencent-model-full/config/method_weights.yaml")
+        config_path = Path(__file__).parents[1] / "config" / "method_weights.yaml"
         if not config_path.exists():
             pytest.skip("method_weights.yaml not found")
         cfg = load_yaml(config_path)
@@ -62,8 +61,7 @@ class TestExpectedValueRow:
 
     def test_method_weights_sum_to_one(self):
         from tencent_valuation_v4.config import load_yaml
-        from pathlib import Path
-        config_path = Path("C:/Projects/tencent-model-full/config/method_weights.yaml")
+        config_path = Path(__file__).parents[1] / "config" / "method_weights.yaml"
         if not config_path.exists():
             pytest.skip("method_weights.yaml not found")
         cfg = load_yaml(config_path)
@@ -82,8 +80,7 @@ class TestExpectedValueRow:
 
     def test_stress_probabilities_below_one(self):
         from tencent_valuation_v4.config import load_yaml
-        from pathlib import Path
-        config_path = Path("C:/Projects/tencent-model-full/config/scenarios.yaml")
+        config_path = Path(__file__).parents[1] / "config" / "scenarios.yaml"
         if not config_path.exists():
             pytest.skip("scenarios.yaml not found")
         cfg = load_yaml(config_path)

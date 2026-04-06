@@ -38,7 +38,7 @@ def pipeline_output(tmp_path_factory: pytest.TempPathFactory):
     project_root = tmp_path_factory.mktemp("integration")
 
     # Copy the real config directory so the pipeline has proper config
-    config_src = Path("C:/Projects/tencent-model-full/config")
+    config_src = Path(__file__).parents[1] / "config"
     if config_src.exists():
         shutil.copytree(config_src, project_root / "config")
     else:
