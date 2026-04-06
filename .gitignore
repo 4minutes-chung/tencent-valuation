@@ -21,6 +21,7 @@ data/processed/
 data/raw/
 reports/tencent_valuation_*.md
 reports/tencent_v4_compact_log_*.md
+reports/tencent_investment_memo_*.md
 reports/qa_*.json
 
 # Internal working logs (not for portfolio)
