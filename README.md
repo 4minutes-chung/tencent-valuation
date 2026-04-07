@@ -2,8 +2,10 @@
 
 ![CI](https://github.com/4minutes-chung/tencent-valuation/actions/workflows/ci.yml/badge.svg)
 
-9-method equity valuation of Tencent Holdings (`0700.HK`). 
+9-method equity valuation of Tencent Holdings (`0700.HK`).
 Built to demonstrate CAPM, DCF, and ensemble valuation mechanics, reproducible from raw data to charts in a single command.
+
+> Project complete. Active run: 2026-04-03. No further development planned.
 
 ---
 
