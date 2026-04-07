@@ -5,7 +5,7 @@
 9-method equity valuation of Tencent Holdings (`0700.HK`).
 Built to demonstrate CAPM, DCF, and ensemble valuation mechanics, reproducible from raw data to charts in a single command.
 
-> Project complete. Active run: 2026-04-03. No further development planned.
+> Project complete. Run with --asof 2026-04-03. 
 
 ---
 
